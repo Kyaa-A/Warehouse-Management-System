@@ -283,7 +283,8 @@ public class Login extends javax.swing.JFrame {
                     Dashboard dashboard = new Dashboard();
                     dashboard.setVisible(true);
                     dashboard.setLocationRelativeTo(null);
-                } else if (userRole == 2) {
+                } 
+                else if (userRole == 2) {
                     // Admin - redirect to Admin panel
                     Admin admin = new Admin();
                     admin.setVisible(true);
