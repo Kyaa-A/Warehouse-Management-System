@@ -1,4 +1,5 @@
 
+import java.awt.Component;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -10,6 +11,10 @@ import java.text.SimpleDateFormat;
 import java.text.DecimalFormat;
 import javax.swing.RowFilter;
 import java.util.Date;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -31,6 +36,7 @@ public class Products extends javax.swing.JFrame {
     private static final String DbUrl = "jdbc:mysql://localhost:3306/" + DbName;
     private static final String DbUsername = "root";
     private static final String DbPassword = "";
+    private TableCellRenderer leftRenderer;
 
     /**
      * Creates new form Products
@@ -42,7 +48,47 @@ public class Products extends javax.swing.JFrame {
             setupTable();
             loadProductsTable();
             initializeSearchField();
-            setupSearch();          // Add this back
+            setupSearch();
+
+                    // Create custom renderer for price column
+        DefaultTableCellRenderer priceRenderer = new DefaultTableCellRenderer() {
+            DecimalFormat priceFormat = new DecimalFormat("₱#,##0.00");
+            
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+                if (value instanceof Double aDouble) {
+                    value = priceFormat.format(aDouble);
+                }
+                return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            }
+        };
+        priceRenderer.setHorizontalAlignment(JLabel.LEFT);
+        
+        // Create custom renderer for weight column
+        DefaultTableCellRenderer weightRenderer = new DefaultTableCellRenderer() {
+            DecimalFormat weightFormat = new DecimalFormat("#,##0.00 kg");
+            
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+                if (value instanceof Double aDouble) {
+                    value = weightFormat.format(aDouble);
+                }
+                return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            }
+        };
+        weightRenderer.setHorizontalAlignment(JLabel.LEFT);
+
+        // Create stock renderer with left alignment
+        DefaultTableCellRenderer stockRenderer = new DefaultTableCellRenderer();
+        stockRenderer.setHorizontalAlignment(JLabel.LEFT);
+
+        // Apply the renderers
+        jTable1.getColumnModel().getColumn(1).setCellRenderer(priceRenderer);  // Price
+        jTable1.getColumnModel().getColumn(2).setCellRenderer(stockRenderer);  // Stock
+        jTable1.getColumnModel().getColumn(3).setCellRenderer(weightRenderer); // Weight
+
 
         } catch (SQLException ex) {
             Logger.getLogger(Products.class.getName()).log(Level.SEVERE, null, ex);
@@ -229,7 +275,6 @@ public class Products extends javax.swing.JFrame {
         jTextField5 = new javax.swing.JTextField();
         jTextField6 = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-        jButton9 = new javax.swing.JButton();
         jButton10 = new javax.swing.JButton();
         jButton12 = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -413,8 +458,6 @@ public class Products extends javax.swing.JFrame {
         jLabel8.setBackground(new java.awt.Color(204, 204, 204));
         jLabel8.setOpaque(true);
 
-        jButton9.setText("Choose Image");
-
         jButton10.setText("Delete");
 
         jButton12.setText("Update");
@@ -431,6 +474,11 @@ public class Products extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(27, 27, 27)
+                        .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel5)
@@ -444,28 +492,16 @@ public class Products extends javax.swing.JFrame {
                             .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(30, 30, 30)
-                        .addComponent(jButton9))
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(jPanel3Layout.createSequentialGroup()
-                            .addContainerGap()
-                            .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(12, 12, 12))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
-                            .addGap(14, 14, 14)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(18, Short.MAX_VALUE))
+                        .addGap(15, 15, 15)
+                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(17, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(15, 15, 15)
+                .addGap(24, 24, 24)
                 .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(10, 10, 10)
-                .addComponent(jButton9)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -485,7 +521,7 @@ public class Products extends javax.swing.JFrame {
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(30, 30, 30)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton10)
                     .addComponent(jButton12))
@@ -642,7 +678,8 @@ public class Products extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0); // Clear existing data
 
-        String query = "SELECT product_name, price, stock, weight, created_at FROM products";
+        String query = "SELECT product_name, price, stock, weight, created_at FROM products ORDER BY created_at DESC";
+
 
         try {
             Statement st = con.createStatement();
@@ -701,11 +738,11 @@ public class Products extends javax.swing.JFrame {
             });
 
             // Adjust column widths
-            jTable1.getColumnModel().getColumn(0).setPreferredWidth(200); // Name
+            jTable1.getColumnModel().getColumn(0).setPreferredWidth(150); // Name
             jTable1.getColumnModel().getColumn(1).setPreferredWidth(100); // Price
             jTable1.getColumnModel().getColumn(2).setPreferredWidth(70);  // Stock
             jTable1.getColumnModel().getColumn(3).setPreferredWidth(100); // Weight
-            jTable1.getColumnModel().getColumn(4).setPreferredWidth(100); // Date
+            jTable1.getColumnModel().getColumn(4).setPreferredWidth(150); // Date
 
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Error loading products: " + e.getMessage());
@@ -758,7 +795,6 @@ public class Products extends javax.swing.JFrame {
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
