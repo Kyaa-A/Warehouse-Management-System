@@ -280,9 +280,9 @@ public class Login extends javax.swing.JFrame {
                 // Redirect based on role
                 if (userRole == 1) {
                     // Regular user - redirect to Dashboard
-                    Admin admin = new Admin();
-                    admin.setVisible(true);
-                    admin.setLocationRelativeTo(null);
+                    UserProduct userproduct = new UserProduct();
+                    userproduct.setVisible(true);
+                    userproduct.setLocationRelativeTo(null);
                 } 
                 else if (userRole == 2) {
                     // Admin - redirect to Admin panel
