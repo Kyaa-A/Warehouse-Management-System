@@ -52,24 +52,44 @@ public class Orders extends javax.swing.JFrame {
 
     public Orders() {
         initComponents();
-    try {
-        Connection();
-        setupTable();
-        loadOrdersTable();
-        initializeSearchField();
-        setupTableSelection();
+        try {
+            Connection();
+            setupTable();
+            loadOrdersTable();
+            initializeSearchField();
+            setupTableSelection();
+            addButtonListeners();
 
-        // Add size constraints directly to jPanel3
-        jPanel3.setPreferredSize(new Dimension(235, 450));
-        jPanel3.setMaximumSize(new Dimension(235, 450));
-        jPanel3.setMinimumSize(new Dimension(235, 450));
-        
-        validate();
-        repaint();
+            jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(
+                    new String[]{"All", "PENDING", "VERIFIED", "PACKED", "SHIPPED", "DELIVERED", "CANCELLED"}
+            ));
+            setupComboBoxFilter();
 
-    } catch (SQLException ex) {
-        Logger.getLogger(Orders.class.getName()).log(Level.SEVERE, null, ex);
+            // Add size constraints directly to jPanel3
+            jPanel3.setPreferredSize(new Dimension(235, 450));
+            jPanel3.setMaximumSize(new Dimension(235, 450));
+            jPanel3.setMinimumSize(new Dimension(235, 450));
+
+            validate();
+            repaint();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(Orders.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
+
+    private void setupComboBoxFilter() {
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                String selectedStatus = jComboBox1.getSelectedItem().toString();
+
+                if (selectedStatus.equals("All")) {
+                    sorter.setRowFilter(null);
+                } else {
+                    sorter.setRowFilter(RowFilter.regexFilter("^" + selectedStatus + "$", 4)); // 4 is the status column index
+                }
+            }
+        });
     }
 
     /**
@@ -293,24 +313,24 @@ public class Orders extends javax.swing.JFrame {
         jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel8.setText("Order Details");
 
-        jLabel9.setText("order id");
+        jLabel9.setText(" ");
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel10.setText("Name");
+        jLabel10.setText(" ");
 
-        jLabel11.setText("Email");
+        jLabel11.setText(" ");
 
-        jLabel12.setText("Number");
+        jLabel12.setText(" ");
 
-        jLabel13.setText("Address");
+        jLabel13.setText(" ");
 
-        jLabel14.setText("Product Detail");
+        jLabel14.setText(" ");
 
-        jLabel15.setText("Price");
+        jLabel15.setText(" ");
 
-        jLabel16.setText("Status");
+        jLabel16.setText(" ");
 
-        jLabel17.setText("Date Change");
+        jLabel17.setText(" ");
 
         jButton7.setText("Pack Order");
 
@@ -404,7 +424,7 @@ public class Orders extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "VERIFIED", "PENDING", "PACKED", "SHIPPED", "DELIVERED", "CANCELLED" }));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -731,6 +751,104 @@ public class Orders extends javax.swing.JFrame {
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
+
+// Individual button action methods
+    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {
+        updateStatus("VERIFIED"); // Verify button
+    }
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {
+        updateStatus("PACKED"); // Pack Order button
+    }
+
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {
+        updateStatus("SHIPPED"); // Ship Order button
+    }
+
+    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {
+        updateStatus("DELIVERED"); // Delivered button
+    }
+
+    private void updateStatus(String newStatus) {
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select an order first");
+            return;
+        }
+
+        String orderId = jTable1.getValueAt(selectedRow, 0).toString();
+        String currentStatus = jTable1.getValueAt(selectedRow, 4).toString();
+
+        // Validation logic for each status change
+        switch (newStatus) {
+            case "VERIFIED":
+                if (!currentStatus.equals("PENDING")) {
+                    JOptionPane.showMessageDialog(this, "Only PENDING orders can be verified.");
+                    return;
+                }
+                break;
+
+            case "PACKED":
+                if (!currentStatus.equals("VERIFIED")) {
+                    JOptionPane.showMessageDialog(this, "Order must be VERIFIED first before packing.");
+                    return;
+                }
+                break;
+
+            case "SHIPPED":
+                if (!currentStatus.equals("PACKED")) {
+                    JOptionPane.showMessageDialog(this, "Order must be PACKED first before shipping.");
+                    return;
+                }
+                break;
+
+            case "DELIVERED":
+                if (!currentStatus.equals("SHIPPED")) {
+                    JOptionPane.showMessageDialog(this, "Order must be SHIPPED first before marking as delivered.");
+                    return;
+                }
+                break;
+        }
+
+        try {
+            String updateQuery = "UPDATE orders SET status = ?, last_updated = NOW() WHERE order_id = ?";
+            PreparedStatement pst = con.prepareStatement(updateQuery);
+            pst.setString(1, newStatus);
+            pst.setString(2, orderId);
+            pst.executeUpdate();
+
+            loadOrdersTable();
+            JOptionPane.showMessageDialog(this, "Order status updated to " + newStatus);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error updating order status: " + ex.getMessage());
+        }
+    }
+
+    private void addButtonListeners() {
+        jButton9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton9ActionPerformed(evt);
+            }
+        });
+
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
+
+        jButton11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton11ActionPerformed(evt);
+            }
+        });
+
+        jButton10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton10ActionPerformed(evt);
+            }
+        });
+    }
 
     /**
      * @param args the command line arguments
