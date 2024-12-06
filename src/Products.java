@@ -508,6 +508,11 @@ public class Products extends javax.swing.JFrame {
         jLabel8.setOpaque(true);
 
         jButton10.setText("Delete");
+        jButton10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton10ActionPerformed(evt);
+            }
+        });
 
         jButton12.setText("Update");
         jButton12.addActionListener(new java.awt.event.ActionListener() {
@@ -756,6 +761,82 @@ public class Products extends javax.swing.JFrame {
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+        // TODO add your handling code here:
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow != -1) {
+            try {
+                // Convert row index to model index in case table is sorted
+                int modelRow = jTable1.convertRowIndexToModel(selectedRow);
+
+                // Get product name from the selected row
+                String productName = jTable1.getModel().getValueAt(modelRow, 0).toString();
+                String price = jTextField3.getText();
+                String stock = jTextField4.getText();
+                String weight = jTextField5.getText();
+
+                // Show confirmation dialog with product details
+                String message = String.format("Are you sure you want to delete this product?\n\n"
+                        + "Product Name: %s\n"
+                        + "Price: %s\n"
+                        + "Stock: %s\n"
+                        + "Weight: %s",
+                        productName,
+                        price,
+                        stock,
+                        weight);
+
+                int choice = JOptionPane.showConfirmDialog(
+                        this,
+                        message,
+                        "Delete Product",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE
+                );
+
+                if (choice == JOptionPane.YES_OPTION) {
+                    // Delete from database
+                    String query = "DELETE FROM products WHERE product_name = ?";
+                    PreparedStatement pst = con.prepareStatement(query);
+                    pst.setString(1, productName);
+
+                    int result = pst.executeUpdate();
+                    if (result > 0) {
+                        // Clear the selection panel
+                        jTextField2.setText("");
+                        jTextField3.setText("");
+                        jTextField4.setText("");
+                        jTextField5.setText("");
+                        jLabel8.setIcon(null);
+
+                        // Refresh the table
+                        loadProductsTable();
+
+                        JOptionPane.showMessageDialog(this,
+                                "Product deleted successfully!",
+                                "Success",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(this,
+                                "Failed to delete product",
+                                "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Error deleting product: " + ex.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "Please select a product to delete",
+                    "Warning",
+                    JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_jButton10ActionPerformed
 
     void loadProductsTable() {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
