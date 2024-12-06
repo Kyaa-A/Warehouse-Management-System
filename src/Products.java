@@ -13,6 +13,7 @@ import javax.swing.RowFilter;
 import java.util.Date;
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
@@ -848,10 +849,10 @@ public class Products extends javax.swing.JFrame {
             Statement st = con.createStatement();
             ResultSet rs = st.executeQuery(query);
 
-            // Formatters
-            SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy");
-            DecimalFormat priceFormat = new DecimalFormat("₱#,##0.00");
-            DecimalFormat weightFormat = new DecimalFormat("#,##0.00 kg");
+            DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
+            leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+            jTable1.getColumnModel().getColumn(0).setCellRenderer(leftRenderer);
+            jTable1.getColumnModel().getColumn(2).setCellRenderer(leftRenderer);
 
             while (rs.next()) {
                 Object[] row = {
@@ -864,48 +865,57 @@ public class Products extends javax.swing.JFrame {
                 model.addRow(row);
             }
 
-            // Set custom renderers for formatting
-            jTable1.getColumnModel().getColumn(1).setCellRenderer(new javax.swing.table.DefaultTableCellRenderer() {
-                @Override
-                public java.awt.Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                    super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                    if (value instanceof Double) {
-                        setText(priceFormat.format((Double) value));
-                    }
-                    setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                    return this;
-                }
-            });
+            jTable1.getColumnModel().getColumn(3).setCellRenderer(new DefaultTableCellRenderer() {
+                DecimalFormat weightFormat = new DecimalFormat("#,##0.00 kg");
 
-            jTable1.getColumnModel().getColumn(3).setCellRenderer(new javax.swing.table.DefaultTableCellRenderer() {
                 @Override
-                public java.awt.Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                public Component getTableCellRendererComponent(JTable table, Object value,
+                        boolean isSelected, boolean hasFocus, int row, int column) {
                     super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                     if (value instanceof Double) {
                         setText(weightFormat.format((Double) value));
                     }
-                    setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+                    setHorizontalAlignment(SwingConstants.LEFT);
                     return this;
                 }
             });
 
-            jTable1.getColumnModel().getColumn(4).setCellRenderer(new javax.swing.table.DefaultTableCellRenderer() {
+            jTable1.getColumnModel().getColumn(1).setCellRenderer(new DefaultTableCellRenderer() {
+                DecimalFormat priceFormat = new DecimalFormat("₱#,##0.00");
+
                 @Override
-                public java.awt.Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                public Component getTableCellRendererComponent(JTable table, Object value,
+                        boolean isSelected, boolean hasFocus, int row, int column) {
+                    super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                    if (value instanceof Double) {
+                        setText(priceFormat.format((Double) value));
+                    }
+                    setHorizontalAlignment(SwingConstants.LEFT);
+                    return this;
+                }
+            });
+
+            jTable1.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy");
+
+                @Override
+                public Component getTableCellRendererComponent(JTable table, Object value,
+                        boolean isSelected, boolean hasFocus, int row, int column) {
                     super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                     if (value instanceof Date) {
                         setText(dateFormat.format((Date) value));
                     }
+                    setHorizontalAlignment(SwingConstants.LEFT);
                     return this;
                 }
             });
 
             // Adjust column widths
-            jTable1.getColumnModel().getColumn(0).setPreferredWidth(150); // Name
-            jTable1.getColumnModel().getColumn(1).setPreferredWidth(100); // Price
-            jTable1.getColumnModel().getColumn(2).setPreferredWidth(70);  // Stock
-            jTable1.getColumnModel().getColumn(3).setPreferredWidth(100); // Weight
-            jTable1.getColumnModel().getColumn(4).setPreferredWidth(150); // Date
+            jTable1.getColumnModel().getColumn(0).setPreferredWidth(150);
+            jTable1.getColumnModel().getColumn(1).setPreferredWidth(100);
+            jTable1.getColumnModel().getColumn(2).setPreferredWidth(70);
+            jTable1.getColumnModel().getColumn(3).setPreferredWidth(100);
+            jTable1.getColumnModel().getColumn(4).setPreferredWidth(150);
 
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Error loading products: " + e.getMessage());
