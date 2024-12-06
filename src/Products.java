@@ -127,65 +127,69 @@ public class Products extends javax.swing.JFrame {
         jTable1.setRowSorter(sorter);
     }
 
+    public Connection getCon() {
+        return this.con;
+    }
+
     private void setupTableSelection() {
-    jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
-        @Override
-        public void mouseClicked(java.awt.event.MouseEvent evt) {
-            int selectedRow = jTable1.getSelectedRow();
-            if (selectedRow != -1) {
-                // Convert row index to model index in case table is sorted
-                int modelRow = jTable1.convertRowIndexToModel(selectedRow);
-                
-                // Get values from the selected row
-                String productName = jTable1.getModel().getValueAt(modelRow, 0).toString();
-                Double price = (Double) jTable1.getModel().getValueAt(modelRow, 1);
-                Integer stock = (Integer) jTable1.getModel().getValueAt(modelRow, 2);
-                Double weight = (Double) jTable1.getModel().getValueAt(modelRow, 3);
-                
-                // Format price and weight
-                DecimalFormat priceFormat = new DecimalFormat("₱#,##0.00");
-                DecimalFormat weightFormat = new DecimalFormat("#,##0.00 kg");
-                
-                // Query for image from database
-                try {
-                    String query = "SELECT image_data FROM products WHERE product_name = ?";
-                    PreparedStatement pst = con.prepareStatement(query);
-                    pst.setString(1, productName);
-                    ResultSet rs = pst.executeQuery();
-                    
-                    if (rs.next()) {
-                        // Set the text fields with formatted values
-                        jTextField2.setText(productName);
-                        jTextField3.setText(priceFormat.format(price));
-                        jTextField4.setText(stock.toString());
-                        jTextField5.setText(weightFormat.format(weight));
-                        
-                        // Handle the image
-                        byte[] imageData = rs.getBytes("image_data");
-                        if (imageData != null && imageData.length > 0) {
-                            try {
-                                java.awt.Image img = javax.imageio.ImageIO.read(
-                                    new java.io.ByteArrayInputStream(imageData));
-                                if (img != null) {
-                                    img = img.getScaledInstance(139, 115, 
-                                        java.awt.Image.SCALE_SMOOTH);
-                                    jLabel8.setIcon(new javax.swing.ImageIcon(img));
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int selectedRow = jTable1.getSelectedRow();
+                if (selectedRow != -1) {
+                    // Convert row index to model index in case table is sorted
+                    int modelRow = jTable1.convertRowIndexToModel(selectedRow);
+
+                    // Get values from the selected row
+                    String productName = jTable1.getModel().getValueAt(modelRow, 0).toString();
+                    Double price = (Double) jTable1.getModel().getValueAt(modelRow, 1);
+                    Integer stock = (Integer) jTable1.getModel().getValueAt(modelRow, 2);
+                    Double weight = (Double) jTable1.getModel().getValueAt(modelRow, 3);
+
+                    // Format price and weight
+                    DecimalFormat priceFormat = new DecimalFormat("₱#,##0.00");
+                    DecimalFormat weightFormat = new DecimalFormat("#,##0.00 kg");
+
+                    // Query for image from database
+                    try {
+                        String query = "SELECT image_data FROM products WHERE product_name = ?";
+                        PreparedStatement pst = con.prepareStatement(query);
+                        pst.setString(1, productName);
+                        ResultSet rs = pst.executeQuery();
+
+                        if (rs.next()) {
+                            // Set the text fields with formatted values
+                            jTextField2.setText(productName);
+                            jTextField3.setText(priceFormat.format(price));
+                            jTextField4.setText(stock.toString());
+                            jTextField5.setText(weightFormat.format(weight));
+
+                            // Handle the image
+                            byte[] imageData = rs.getBytes("image_data");
+                            if (imageData != null && imageData.length > 0) {
+                                try {
+                                    java.awt.Image img = javax.imageio.ImageIO.read(
+                                            new java.io.ByteArrayInputStream(imageData));
+                                    if (img != null) {
+                                        img = img.getScaledInstance(139, 115,
+                                                java.awt.Image.SCALE_SMOOTH);
+                                        jLabel8.setIcon(new javax.swing.ImageIcon(img));
+                                    }
+                                } catch (Exception e) {
+                                    System.err.println("Error loading image: " + e.getMessage());
+                                    jLabel8.setIcon(null);
                                 }
-                            } catch (Exception e) {
-                                System.err.println("Error loading image: " + e.getMessage());
+                            } else {
                                 jLabel8.setIcon(null);
                             }
-                        } else {
-                            jLabel8.setIcon(null);
                         }
+                    } catch (SQLException ex) {
+                        System.err.println("Error retrieving product details: " + ex.getMessage());
                     }
-                } catch (SQLException ex) {
-                    System.err.println("Error retrieving product details: " + ex.getMessage());
                 }
             }
-        }
-    });
-}
+        });
+    }
 
     private void setupSearch() {
         // First ensure the table model is set
@@ -701,7 +705,41 @@ public class Products extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
-        // TODO add your handling code here:
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow != -1) {
+            try {
+                // Convert row index to model index in case table is sorted
+                int modelRow = jTable1.convertRowIndexToModel(selectedRow);
+
+                // Get values from the selected row
+                String name = jTable1.getModel().getValueAt(modelRow, 0).toString();
+                double price = (Double) jTable1.getModel().getValueAt(modelRow, 1); // Unbox to primitive
+                int stock = (Integer) jTable1.getModel().getValueAt(modelRow, 2);   // Unbox to primitive
+                double weight = (Double) jTable1.getModel().getValueAt(modelRow, 3); // Unbox to primitive
+
+                // Get the image data from database
+                String query = "SELECT image_data FROM products WHERE product_name = ?";
+                PreparedStatement pst = con.prepareStatement(query);
+                pst.setString(1, name);
+                ResultSet rs = pst.executeQuery();
+
+                byte[] imageData = null;
+                if (rs.next()) {
+                    imageData = rs.getBytes("image_data");
+                }
+
+                // Create and show the update dialog with the correct parameter types
+                UpdateProductDialog dialog = new UpdateProductDialog(
+                        this, true, name, price, stock, weight, imageData, con);
+                dialog.setVisible(true);
+
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Error loading product details: " + ex.getMessage());
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Please select a product to update");
+        }
     }//GEN-LAST:event_jButton12ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
@@ -714,7 +752,7 @@ public class Products extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
 
-    private void loadProductsTable() {
+    void loadProductsTable() {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0); // Clear existing data
 
