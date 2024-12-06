@@ -49,46 +49,46 @@ public class Products extends javax.swing.JFrame {
             loadProductsTable();
             initializeSearchField();
             setupSearch();
+            setupTableSelection();
 
-                    // Create custom renderer for price column
-        DefaultTableCellRenderer priceRenderer = new DefaultTableCellRenderer() {
-            DecimalFormat priceFormat = new DecimalFormat("₱#,##0.00");
-            
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value,
-                    boolean isSelected, boolean hasFocus, int row, int column) {
-                if (value instanceof Double aDouble) {
-                    value = priceFormat.format(aDouble);
+            // Create custom renderer for price column
+            DefaultTableCellRenderer priceRenderer = new DefaultTableCellRenderer() {
+                DecimalFormat priceFormat = new DecimalFormat("₱#,##0.00");
+
+                @Override
+                public Component getTableCellRendererComponent(JTable table, Object value,
+                        boolean isSelected, boolean hasFocus, int row, int column) {
+                    if (value instanceof Double aDouble) {
+                        value = priceFormat.format(aDouble);
+                    }
+                    return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 }
-                return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            }
-        };
-        priceRenderer.setHorizontalAlignment(JLabel.LEFT);
-        
-        // Create custom renderer for weight column
-        DefaultTableCellRenderer weightRenderer = new DefaultTableCellRenderer() {
-            DecimalFormat weightFormat = new DecimalFormat("#,##0.00 kg");
-            
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value,
-                    boolean isSelected, boolean hasFocus, int row, int column) {
-                if (value instanceof Double aDouble) {
-                    value = weightFormat.format(aDouble);
+            };
+            priceRenderer.setHorizontalAlignment(JLabel.LEFT);
+
+            // Create custom renderer for weight column
+            DefaultTableCellRenderer weightRenderer = new DefaultTableCellRenderer() {
+                DecimalFormat weightFormat = new DecimalFormat("#,##0.00 kg");
+
+                @Override
+                public Component getTableCellRendererComponent(JTable table, Object value,
+                        boolean isSelected, boolean hasFocus, int row, int column) {
+                    if (value instanceof Double aDouble) {
+                        value = weightFormat.format(aDouble);
+                    }
+                    return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 }
-                return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            }
-        };
-        weightRenderer.setHorizontalAlignment(JLabel.LEFT);
+            };
+            weightRenderer.setHorizontalAlignment(JLabel.LEFT);
 
-        // Create stock renderer with left alignment
-        DefaultTableCellRenderer stockRenderer = new DefaultTableCellRenderer();
-        stockRenderer.setHorizontalAlignment(JLabel.LEFT);
+            // Create stock renderer with left alignment
+            DefaultTableCellRenderer stockRenderer = new DefaultTableCellRenderer();
+            stockRenderer.setHorizontalAlignment(JLabel.LEFT);
 
-        // Apply the renderers
-        jTable1.getColumnModel().getColumn(1).setCellRenderer(priceRenderer);  // Price
-        jTable1.getColumnModel().getColumn(2).setCellRenderer(stockRenderer);  // Stock
-        jTable1.getColumnModel().getColumn(3).setCellRenderer(weightRenderer); // Weight
-
+            // Apply the renderers
+            jTable1.getColumnModel().getColumn(1).setCellRenderer(priceRenderer);  // Price
+            jTable1.getColumnModel().getColumn(2).setCellRenderer(stockRenderer);  // Stock
+            jTable1.getColumnModel().getColumn(3).setCellRenderer(weightRenderer); // Weight
 
         } catch (SQLException ex) {
             Logger.getLogger(Products.class.getName()).log(Level.SEVERE, null, ex);
@@ -126,6 +126,66 @@ public class Products extends javax.swing.JFrame {
         sorter = new TableRowSorter<>(model);
         jTable1.setRowSorter(sorter);
     }
+
+    private void setupTableSelection() {
+    jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+        @Override
+        public void mouseClicked(java.awt.event.MouseEvent evt) {
+            int selectedRow = jTable1.getSelectedRow();
+            if (selectedRow != -1) {
+                // Convert row index to model index in case table is sorted
+                int modelRow = jTable1.convertRowIndexToModel(selectedRow);
+                
+                // Get values from the selected row
+                String productName = jTable1.getModel().getValueAt(modelRow, 0).toString();
+                Double price = (Double) jTable1.getModel().getValueAt(modelRow, 1);
+                Integer stock = (Integer) jTable1.getModel().getValueAt(modelRow, 2);
+                Double weight = (Double) jTable1.getModel().getValueAt(modelRow, 3);
+                
+                // Format price and weight
+                DecimalFormat priceFormat = new DecimalFormat("₱#,##0.00");
+                DecimalFormat weightFormat = new DecimalFormat("#,##0.00 kg");
+                
+                // Query for image from database
+                try {
+                    String query = "SELECT image_data FROM products WHERE product_name = ?";
+                    PreparedStatement pst = con.prepareStatement(query);
+                    pst.setString(1, productName);
+                    ResultSet rs = pst.executeQuery();
+                    
+                    if (rs.next()) {
+                        // Set the text fields with formatted values
+                        jTextField2.setText(productName);
+                        jTextField3.setText(priceFormat.format(price));
+                        jTextField4.setText(stock.toString());
+                        jTextField5.setText(weightFormat.format(weight));
+                        
+                        // Handle the image
+                        byte[] imageData = rs.getBytes("image_data");
+                        if (imageData != null && imageData.length > 0) {
+                            try {
+                                java.awt.Image img = javax.imageio.ImageIO.read(
+                                    new java.io.ByteArrayInputStream(imageData));
+                                if (img != null) {
+                                    img = img.getScaledInstance(139, 115, 
+                                        java.awt.Image.SCALE_SMOOTH);
+                                    jLabel8.setIcon(new javax.swing.ImageIcon(img));
+                                }
+                            } catch (Exception e) {
+                                System.err.println("Error loading image: " + e.getMessage());
+                                jLabel8.setIcon(null);
+                            }
+                        } else {
+                            jLabel8.setIcon(null);
+                        }
+                    }
+                } catch (SQLException ex) {
+                    System.err.println("Error retrieving product details: " + ex.getMessage());
+                }
+            }
+        }
+    });
+}
 
     private void setupSearch() {
         // First ensure the table model is set
@@ -268,12 +328,10 @@ public class Products extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
         jTextField2 = new javax.swing.JTextField();
         jTextField3 = new javax.swing.JTextField();
         jTextField4 = new javax.swing.JTextField();
         jTextField5 = new javax.swing.JTextField();
-        jTextField6 = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         jButton10 = new javax.swing.JButton();
         jButton12 = new javax.swing.JButton();
@@ -442,19 +500,6 @@ public class Products extends javax.swing.JFrame {
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel6.setText("Weight");
 
-        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel7.setText("Discount");
-
-        jTextField2.setText("jTextField2");
-
-        jTextField3.setText("jTextField3");
-
-        jTextField4.setText("jTextField4");
-
-        jTextField5.setText("jTextField5");
-
-        jTextField6.setText("jTextField6");
-
         jLabel8.setBackground(new java.awt.Color(204, 204, 204));
         jLabel8.setOpaque(true);
 
@@ -472,36 +517,35 @@ public class Products extends javax.swing.JFrame {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(27, 27, 27)
-                        .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(15, 15, 15)
-                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addContainerGap()
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel5)
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel3)
+                                .addComponent(jLabel6)))
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addGap(15, 15, 15)
+                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addGap(33, 33, 33)
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jButton12, javax.swing.GroupLayout.DEFAULT_SIZE, 99, Short.MAX_VALUE)
+                                .addComponent(jButton10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                 .addContainerGap(17, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(24, 24, 24)
+                .addGap(16, 16, 16)
                 .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(26, 26, 26)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -517,15 +561,11 @@ public class Products extends javax.swing.JFrame {
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12)
-                .addComponent(jLabel7)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton10)
-                    .addComponent(jButton12))
-                .addContainerGap(8, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(26, Short.MAX_VALUE))
         );
 
         jTable1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -680,7 +720,6 @@ public class Products extends javax.swing.JFrame {
 
         String query = "SELECT product_name, price, stock, weight, created_at FROM products ORDER BY created_at DESC";
 
-
         try {
             Statement st = con.createStatement();
             ResultSet rs = st.executeQuery(query);
@@ -801,7 +840,6 @@ public class Products extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -813,6 +851,5 @@ public class Products extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
-    private javax.swing.JTextField jTextField6;
     // End of variables declaration//GEN-END:variables
 }
