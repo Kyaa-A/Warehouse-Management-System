@@ -1,4 +1,7 @@
 
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.awt.Image;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -12,6 +15,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
@@ -22,7 +26,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 public class UpdateProductDialog extends javax.swing.JDialog {
 
-   private Connection con;
+    private Connection con;
     private Products parentFrame;
     private String originalProductName;
     private byte[] imageData;
@@ -38,41 +42,77 @@ public class UpdateProductDialog extends javax.swing.JDialog {
         this.originalProductName = name;
         this.imageData = currentImageData;
 
-       // Format values before setting
+        // Format values before setting
         DecimalFormat priceFormat = new DecimalFormat("₱#,##0.00");
         DecimalFormat weightFormat = new DecimalFormat("#,##0.00 kg");
-        
+
         // Set values to fields
         jTextField1.setText(name);
         jTextField2.setText(priceFormat.format(price));  // Format with peso sign
         jTextField3.setText(String.valueOf(stock));
         jTextField4.setText(weightFormat.format(weight)); // Format with kg
-        
+
+        // Display image if available
         // Display image if available
         if (currentImageData != null && currentImageData.length > 0) {
             try {
-                Image img = ImageIO.read(new ByteArrayInputStream(currentImageData));
-                if (img != null) {
-                    img = img.getScaledInstance(115, 115, Image.SCALE_SMOOTH);
-                    jLabel8.setIcon(new ImageIcon(img));
+                BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(currentImageData));
+                if (originalImage != null) {
+                    // Calculate scaling while maintaining aspect ratio
+                    int originalWidth = originalImage.getWidth();
+                    int originalHeight = originalImage.getHeight();
+                    int targetWidth = 115;
+                    int targetHeight = 115;
+
+                    double scale = Math.min((double) targetWidth / originalWidth,
+                            (double) targetHeight / originalHeight);
+
+                    int scaledWidth = (int) (originalWidth * scale);
+                    int scaledHeight = (int) (originalHeight * scale);
+
+                    // Create high-quality scaled image
+                    BufferedImage scaledImage = new BufferedImage(scaledWidth, scaledHeight,
+                            BufferedImage.TYPE_INT_RGB); // Changed to RGB
+                    Graphics2D g2d = scaledImage.createGraphics();
+
+                    // Add background
+                    g2d.setBackground(jLabel8.getBackground());
+                    g2d.clearRect(0, 0, scaledWidth, scaledHeight);
+
+                    // Set rendering hints for better quality
+                    g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
+                            RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+                    g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                            RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                    g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
+                            RenderingHints.VALUE_RENDER_QUALITY);
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                            RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING,
+                            RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+
+                    // Draw using better quality
+                    g2d.drawImage(originalImage, 0, 0, scaledWidth, scaledHeight, null);
+                    g2d.dispose();
+
+                    jLabel8.setIcon(new ImageIcon(scaledImage));
                 }
             } catch (Exception e) {
                 System.err.println("Error loading image: " + e.getMessage());
+                jLabel8.setIcon(null);
             }
         }
-        
+
         // Add action listeners
         jButton9.addActionListener(evt -> chooseImage());  // Choose Image button
         jButton1.addActionListener(evt -> updateProduct());  // Update Product button
         jButton2.addActionListener(evt -> dispose());  // Cancel button
-        
+
         // Set dialog properties
         setTitle("Update Product");
         setResizable(false);
         setLocationRelativeTo(parent);
     }
-
-
 
     private void chooseImage() {
         JFileChooser chooser = new JFileChooser();
@@ -85,10 +125,48 @@ public class UpdateProductDialog extends javax.swing.JDialog {
                 File file = chooser.getSelectedFile();
                 imageData = Files.readAllBytes(file.toPath());
 
-                // Display the selected image
-                Image img = ImageIO.read(file);
-                img = img.getScaledInstance(115, 115, Image.SCALE_SMOOTH);
-                jLabel8.setIcon(new ImageIcon(img));
+                // Read and display the image with high quality
+                BufferedImage originalImage = ImageIO.read(file);
+                if (originalImage != null) {
+                    // Calculate scaling while maintaining aspect ratio
+                    int originalWidth = originalImage.getWidth();
+                    int originalHeight = originalImage.getHeight();
+                    int targetWidth = 115;
+                    int targetHeight = 115;
+
+                    double scale = Math.min((double) targetWidth / originalWidth,
+                            (double) targetHeight / originalHeight);
+
+                    int scaledWidth = (int) (originalWidth * scale);
+                    int scaledHeight = (int) (originalHeight * scale);
+
+                    // Create high-quality scaled image
+                    BufferedImage scaledImage = new BufferedImage(scaledWidth, scaledHeight,
+                            BufferedImage.TYPE_INT_RGB); // Changed to RGB
+                    Graphics2D g2d = scaledImage.createGraphics();
+
+                    // Add background
+                    g2d.setBackground(jLabel8.getBackground());
+                    g2d.clearRect(0, 0, scaledWidth, scaledHeight);
+
+                    // Set rendering hints for better quality
+                    g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
+                            RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+                    g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                            RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                    g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
+                            RenderingHints.VALUE_RENDER_QUALITY);
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                            RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING,
+                            RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+
+                    // Draw using better quality
+                    g2d.drawImage(originalImage, 0, 0, scaledWidth, scaledHeight, null);
+                    g2d.dispose();
+
+                    jLabel8.setIcon(new ImageIcon(scaledImage));
+                }
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this,
                         "Error loading image: " + e.getMessage(),
@@ -100,91 +178,91 @@ public class UpdateProductDialog extends javax.swing.JDialog {
 
     private void updateProduct() {
         try {
-        // Validate inputs
-        String name = jTextField1.getText().trim();
-        if (name.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Product name cannot be empty");
-            return;
-        }
-        
-        // Parse and validate price - remove peso sign and commas
-        double price;
-        try {
-            String priceStr = jTextField2.getText().trim()
-                .replace("₱", "")
-                .replace(",", "");
-            price = Double.parseDouble(priceStr);
-            if (price < 0) {
-                throw new NumberFormatException();
+            // Validate inputs
+            String name = jTextField1.getText().trim();
+            if (name.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Product name cannot be empty");
+                return;
             }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Please enter a valid price");
-            return;
-        }
-        
-        // Parse and validate stock
-        int stock;
-        try {
-            stock = Integer.parseInt(jTextField3.getText().trim());
-            if (stock < 0) {
-                throw new NumberFormatException();
+
+            // Parse and validate price - remove peso sign and commas
+            double price;
+            try {
+                String priceStr = jTextField2.getText().trim()
+                        .replace("₱", "")
+                        .replace(",", "");
+                price = Double.parseDouble(priceStr);
+                if (price < 0) {
+                    throw new NumberFormatException();
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Please enter a valid price");
+                return;
             }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Please enter a valid stock number");
-            return;
-        }
-        
-        // Parse and validate weight - remove "kg" and commas
-        double weight;
-        try {
-            String weightStr = jTextField4.getText().trim()
-                .replace(" kg", "")
-                .replace(",", "");
-            weight = Double.parseDouble(weightStr);
-            if (weight < 0) {
-                throw new NumberFormatException();
+
+            // Parse and validate stock
+            int stock;
+            try {
+                stock = Integer.parseInt(jTextField3.getText().trim());
+                if (stock < 0) {
+                    throw new NumberFormatException();
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Please enter a valid stock number");
+                return;
             }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Please enter a valid weight");
-            return;
+
+            // Parse and validate weight - remove "kg" and commas
+            double weight;
+            try {
+                String weightStr = jTextField4.getText().trim()
+                        .replace(" kg", "")
+                        .replace(",", "");
+                weight = Double.parseDouble(weightStr);
+                if (weight < 0) {
+                    throw new NumberFormatException();
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Please enter a valid weight");
+                return;
+            }
+
+            // Prepare update query
+            String query = "UPDATE products SET product_name=?, price=?, stock=?, weight=?";
+            if (imageData != null) {
+                query += ", image_data=?";
+            }
+            query += " WHERE product_name=?";
+
+            PreparedStatement pst = con.prepareStatement(query);
+            pst.setString(1, name);
+            pst.setDouble(2, price);
+            pst.setInt(3, stock);
+            pst.setDouble(4, weight);
+
+            if (imageData != null) {
+                pst.setBytes(5, imageData);
+                pst.setString(6, originalProductName);
+            } else {
+                pst.setString(5, originalProductName);
+            }
+
+            // Execute update
+            int result = pst.executeUpdate();
+            if (result > 0) {
+                JOptionPane.showMessageDialog(this, "Product updated successfully!");
+                parentFrame.loadProductsTable();  // Refresh the products table
+                dispose();  // Close the dialog
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to update product");
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error updating product: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
-        
-        // Prepare update query
-        String query = "UPDATE products SET product_name=?, price=?, stock=?, weight=?";
-        if (imageData != null) {
-            query += ", image_data=?";
-        }
-        query += " WHERE product_name=?";
-        
-        PreparedStatement pst = con.prepareStatement(query);
-        pst.setString(1, name);
-        pst.setDouble(2, price);
-        pst.setInt(3, stock);
-        pst.setDouble(4, weight);
-        
-        if (imageData != null) {
-            pst.setBytes(5, imageData);
-            pst.setString(6, originalProductName);
-        } else {
-            pst.setString(5, originalProductName);
-        }
-        
-        // Execute update
-        int result = pst.executeUpdate();
-        if (result > 0) {
-            JOptionPane.showMessageDialog(this, "Product updated successfully!");
-            parentFrame.loadProductsTable();  // Refresh the products table
-            dispose();  // Close the dialog
-        } else {
-            JOptionPane.showMessageDialog(this, "Failed to update product");
-        }
-        
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this,
-            "Error updating product: " + e.getMessage(),
-            "Error",
-            JOptionPane.ERROR_MESSAGE);
-    }
     }
 
     /**
@@ -336,38 +414,38 @@ public class UpdateProductDialog extends javax.swing.JDialog {
      */
     public static void main(String args[]) {
         //* Set the Nimbus look and feel */
-    try {
-        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-            if ("Nimbus".equals(info.getName())) {
-                javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                break;
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
             }
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(UpdateProductDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-        java.util.logging.Logger.getLogger(UpdateProductDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
 
-    /* Create and display the dialog */
-    java.awt.EventQueue.invokeLater(() -> {
-        // Since this is just for testing/preview, we'll use dummy values
-        UpdateProductDialog dialog = new UpdateProductDialog(
-            new javax.swing.JFrame(),  // parent frame
-            true,                      // modal
-            "Test Product",            // name
-            0.0,                       // price
-            0,                         // stock
-            0.0,                       // weight
-            null,                      // image data
-            null                       // connection (null for preview)
-        );
-        dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(java.awt.event.WindowEvent e) {
-                System.exit(0);
-            }
+        /* Create and display the dialog */
+        java.awt.EventQueue.invokeLater(() -> {
+            // Since this is just for testing/preview, we'll use dummy values
+            UpdateProductDialog dialog = new UpdateProductDialog(
+                    new javax.swing.JFrame(), // parent frame
+                    true, // modal
+                    "Test Product", // name
+                    0.0, // price
+                    0, // stock
+                    0.0, // weight
+                    null, // image data
+                    null // connection (null for preview)
+            );
+            dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent e) {
+                    System.exit(0);
+                }
+            });
+            dialog.setVisible(true);
         });
-        dialog.setVisible(true);
-    });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
