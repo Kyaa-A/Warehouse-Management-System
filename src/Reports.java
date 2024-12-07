@@ -240,7 +240,7 @@ public class Reports extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // Shipping button
-        Shipping shipping = new Shipping();
+        Carrier shipping = new Carrier();
         shipping.setVisible(true);
         shipping.setLocationRelativeTo(null);
         this.dispose();
