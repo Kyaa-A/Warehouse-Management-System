@@ -398,6 +398,7 @@ public class Dashboard extends javax.swing.JFrame {
             }
         ));
         jTable1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jTable1.setRowHeight(35);
         jScrollPane1.setViewportView(jTable1);
 
         jButton7.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asnari Pacalna\\Documents\\NetBeansProjects\\WarehouseSystem\\src\\Icons\\search.png")); // NOI18N
@@ -631,58 +632,56 @@ public class Dashboard extends javax.swing.JFrame {
 
     private void loadRecentOrders() {
         try {
-            // Create a table model with non-editable cells
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-            model.setRowCount(0); // Clear existing data
+            model.setRowCount(0);
 
-            // Query to get recent orders with customer names and items
             String query = """
-            SELECT o.order_id, c.customer_name, o.status, 
-                   GROUP_CONCAT(p.product_name SEPARATOR ', ') as items,
+            SELECT o.order_id, c.customer_name, o.status,
+                   GROUP_CONCAT(
+                       CONCAT(p.product_name, ' (', oi.quantity, ')')
+                       ORDER BY p.product_name
+                       SEPARATOR ', '
+                   ) as items,
                    o.tracking_number
             FROM orders o
             JOIN customers c ON o.customer_id = c.customer_id
             LEFT JOIN order_items oi ON o.order_id = oi.order_id
             LEFT JOIN products p ON oi.product_id = p.product_id
-            GROUP BY o.order_id
+            GROUP BY o.order_id, c.customer_name, o.status, o.tracking_number, o.order_date
             ORDER BY o.order_date DESC
+            LIMIT 10
         """;
 
             PreparedStatement stmt = conn.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
+                String items = rs.getString("items");
+                if (items == null || items.isEmpty()) {
+                    items = "No items";
+                }
+
                 Object[] row = {
                     rs.getString("order_id"),
                     rs.getString("customer_name"),
                     rs.getString("status"),
-                    rs.getString("items"),
+                    items,
                     rs.getString("tracking_number")
                 };
                 model.addRow(row);
             }
 
-            // Style the table
+            // Table styling remains the same
             jTable1.setFont(new Font("Segoe UI", Font.PLAIN, 12));
             jTable1.setRowHeight(25);
 
-            // Style the header
-            JTableHeader header = jTable1.getTableHeader();
-            header.setFont(new Font("Segoe UI", Font.BOLD, 12));
-
-            // Make table read-only
-            jTable1.setDefaultEditor(Object.class, null);
-
-            // Add row selection
-            jTable1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            jTable1.setRowSelectionAllowed(true);
-
-            // Center align the status column (index 2)
+            // Center align the status column
             DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
             centerRenderer.setHorizontalAlignment(JLabel.CENTER);
             jTable1.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
 
         } catch (SQLException ex) {
+            ex.printStackTrace();
             JOptionPane.showMessageDialog(this,
                     "Error loading recent orders: " + ex.getMessage(),
                     "Database Error",
