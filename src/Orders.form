@@ -187,7 +187,7 @@
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
               <Image iconType="2" name="C:\Users\Asnari Pacalna\Documents\NetBeansProjects\WarehouseSystem\src\Icons\shipping-black.png"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Shipping"/>
+            <Property name="text" type="java.lang.String" value="Carrier"/>
             <Property name="horizontalAlignment" type="int" value="2"/>
           </Properties>
           <Events>
@@ -284,11 +284,11 @@
                               <Component id="jComboBox1" alignment="3" min="-2" pref="32" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="jScrollPane1" min="-2" pref="548" max="-2" attributes="0"/>
+                          <Component id="jScrollPane1" min="-2" pref="537" max="-2" attributes="0"/>
                       </Group>
                       <Component id="jPanel3" max="32767" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>

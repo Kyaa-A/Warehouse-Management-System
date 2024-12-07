@@ -180,7 +180,7 @@ public class Orders extends javax.swing.JFrame {
 
         jButton3.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jButton3.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asnari Pacalna\\Documents\\NetBeansProjects\\WarehouseSystem\\src\\Icons\\shipping-black.png")); // NOI18N
-        jButton3.setText("Shipping");
+        jButton3.setText("Carrier");
         jButton3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -454,9 +454,9 @@ public class Orders extends javax.swing.JFrame {
                             .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 548, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 537, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(20, 20, 20))
+                .addGap(31, 31, 31))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -522,7 +522,7 @@ public class Orders extends javax.swing.JFrame {
 
             Statement st = con.createStatement();
             ResultSet rs = st.executeQuery(query);
-            SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy");
             DecimalFormat priceFormat = new DecimalFormat("₱#,##0.00");
 
             while (rs.next()) {
@@ -552,18 +552,22 @@ public class Orders extends javax.swing.JFrame {
                     String orderId = jTable1.getValueAt(selectedRow, 0).toString();
 
                     try {
-                        // Updated query to match our table structure
                         String query = """
-    SELECT o.*, c.*, 
-    GROUP_CONCAT(p.product_name SEPARATOR ', ') as products,
-    SUM(oi.quantity * p.price) as total
-    FROM orders o
-    JOIN customers c ON o.customer_id = c.customer_id
-    JOIN order_items oi ON o.order_id = oi.order_id
-    JOIN products p ON oi.product_id = p.product_id
-    WHERE o.order_id = ?
-    GROUP BY o.order_id
-""";
+                        SELECT o.*, c.*, 
+                        GROUP_CONCAT(
+                            CONCAT(p.product_name, ' (', oi.quantity, ')')
+                            ORDER BY p.product_name
+                            SEPARATOR ', '
+                        ) as products,
+                        COALESCE(SUM(p.price * oi.quantity), 0) as total_price
+                        FROM orders o
+                        JOIN customers c ON o.customer_id = c.customer_id
+                        LEFT JOIN order_items oi ON o.order_id = oi.order_id
+                        LEFT JOIN products p ON oi.product_id = p.product_id
+                        WHERE o.order_id = ?
+                        GROUP BY o.order_id
+                    """;
+
                         PreparedStatement pst = con.prepareStatement(query);
                         pst.setString(1, orderId);
                         ResultSet rs = pst.executeQuery();
@@ -575,13 +579,26 @@ public class Orders extends javax.swing.JFrame {
                             jLabel11.setText(rs.getString("email"));
                             jLabel12.setText(rs.getString("phone"));
                             jLabel13.setText("<html><div style='width:180px;'>" + rs.getString("address") + "</div></html>");
-                            jLabel14.setText(rs.getString("notes")); // Changed from products to notes
-                            jLabel15.setText(new DecimalFormat("₱#,##0.00").format(rs.getDouble("total_weight"))); // Changed from total to total_weight
+
+                            // Update product details
+                            String products = rs.getString("products");
+                            if (products == null || products.isEmpty()) {
+                                products = "No items";
+                            }
+                            jLabel14.setText("<html><div style='width:180px;'>" + products + "</div></html>");
+
+                            // Format and display total price
+                            DecimalFormat priceFormat = new DecimalFormat("₱#,##0.00");
+                            jLabel15.setText(priceFormat.format(rs.getDouble("total_price")));
+
+                            // Status and date
                             jLabel16.setText(rs.getString("status"));
-                            jLabel17.setText(new SimpleDateFormat("MMM dd, yyyy HH:mm").format(rs.getTimestamp("last_updated")));
+                            jLabel17.setText(new SimpleDateFormat("MMMM dd, yyyy HH:mm")
+                                    .format(rs.getTimestamp("last_updated")));
                         }
                     } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(Orders.this, "Error loading order details: " + ex.getMessage());
+                        JOptionPane.showMessageDialog(Orders.this,
+                                "Error loading order details: " + ex.getMessage());
                     }
                 }
             }
