@@ -2,6 +2,9 @@
 import javax.swing.JOptionPane;
 import java.sql.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.print.*;
+import java.awt.Graphics;
+import java.awt.Font;
 
 
 /*
@@ -28,6 +31,7 @@ public class Packing extends javax.swing.JFrame {
         loadVerifiedOrders();
         loadPackedOrders();
         addTableListeners();
+        initPrintButton();
     }
 
     /**
@@ -437,8 +441,81 @@ public class Packing extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error loading order information: " + e.getMessage());
         }
     }
-    
-    
+
+    private void printOrderInformation() {
+        PrinterJob job = PrinterJob.getPrinterJob();
+        job.setPrintable((Graphics graphics, PageFormat pageFormat, int pageIndex) -> {
+            if (pageIndex > 0) {
+                return Printable.NO_SUCH_PAGE;
+            }
+
+            // Get the printable width and height
+            double width = pageFormat.getImageableWidth();
+            double height = pageFormat.getImageableHeight();
+
+            // Get the starting position
+            double x = pageFormat.getImageableX() + 50;
+            double y = pageFormat.getImageableY() + 50;
+
+            // Set font for title
+            graphics.setFont(new Font("Arial", Font.BOLD, 16));
+            graphics.drawString("Order Information", (int) x, (int) y);
+
+            // Set font for content
+            graphics.setFont(new Font("Arial", Font.PLAIN, 12));
+
+            // Print order details
+            y += 30;
+            graphics.drawString("Order Number: " + jLabel19.getText(), (int) x, (int) y);
+
+            y += 20;
+            graphics.drawString("Customer Name: " + jLabel20.getText(), (int) x, (int) y);
+
+            y += 20;
+            graphics.drawString("Tracking Number: " + jLabel21.getText(), (int) x, (int) y);
+
+            y += 20;
+            graphics.drawString("Product Name: " + jLabel23.getText(), (int) x, (int) y);
+
+            y += 20;
+            // Handle multiline address
+            String address = jLabel24.getText().replace("<html><div style='width:180px;'>", "")
+                    .replace("</div></html>", "");
+            graphics.drawString("Shipping Address: " + address, (int) x, (int) y);
+
+            y += 20;
+            graphics.drawString("Total Cost: " + jLabel25.getText(), (int) x, (int) y);
+
+            return Printable.PAGE_EXISTS;
+        });
+
+        if (job.printDialog()) {
+            try {
+                job.print();
+            } catch (PrinterException e) {
+                JOptionPane.showMessageDialog(this,
+                        "Error printing: " + e.getMessage(),
+                        "Print Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void initPrintButton() {
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                // Check if there's an order selected
+                if (jLabel19.getText().trim().isEmpty() || jLabel19.getText().equals(" ")) {
+                    JOptionPane.showMessageDialog(Packing.this,
+                            "Please select an order to print",
+                            "Print Error",
+                            JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                printOrderInformation();
+            }
+        });
+    }
 
     private void addTableListeners() {
         jTable1.addMouseListener(new java.awt.event.MouseAdapter() {

@@ -334,10 +334,8 @@
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                      <Component id="jLabel14" alignment="0" pref="232" max="32767" attributes="0"/>
-                                      <Component id="jLabel13" alignment="0" max="32767" attributes="0"/>
-                                  </Group>
+                                  <Component id="jLabel14" alignment="0" pref="232" max="32767" attributes="0"/>
+                                  <Component id="jLabel13" alignment="0" max="32767" attributes="0"/>
                                   <Component id="jLabel23" max="32767" attributes="0"/>
                                   <Component id="jLabel24" alignment="0" pref="325" max="32767" attributes="0"/>
                               </Group>
