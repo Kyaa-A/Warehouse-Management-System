@@ -31,7 +31,7 @@ public class Dashboard extends javax.swing.JFrame {
 
     // Add these class variables
     private Connection conn = null;
-    private static final String URL = "jdbc:mysql://localhost:3306/warehouse";
+    private static final String URL = "jdbc:mysql://localhost:3306/wms";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "";
 

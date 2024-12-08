@@ -482,7 +482,7 @@ public class Orders extends javax.swing.JFrame {
     private void Connection() throws SQLException {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/warehouse", "root", "");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/wms", "root", "");
             st = con.createStatement();
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Orders.class.getName()).log(Level.SEVERE, null, ex);

@@ -33,7 +33,7 @@ public class Carrier extends javax.swing.JFrame {
     private PreparedStatement pst;
     private TableRowSorter<TableModel> sorter;
 
-    private static final String DbName = "warehouse";
+    private static final String DbName = "wms";
     private static final String DbDriver = "com.mysql.cj.jdbc.Driver";
     private static final String DbUrl = "jdbc:mysql://localhost:3306/" + DbName;
     private static final String DbUsername = "root";
@@ -152,8 +152,8 @@ public class Carrier extends javax.swing.JFrame {
                 TotalOrder.setText(String.valueOf(rs.getInt(1)));
             }
 
-            // Verified carriers (EXPRESS service)
-            rs = st.executeQuery("SELECT COUNT(*) FROM carriers WHERE service_level = 'EXPRESS'");
+            // Total delivered orders
+            rs = st.executeQuery("SELECT COUNT(*) FROM orders WHERE status = 'DELIVERED'");
             if (rs.next()) {
                 PendingVerification.setText(String.valueOf(rs.getInt(1)));
             }
@@ -504,7 +504,7 @@ public class Carrier extends javax.swing.JFrame {
         jPanel4.setPreferredSize(new java.awt.Dimension(160, 130));
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel4.setText("Verified");
+        jLabel4.setText("Total Delivered");
 
         PendingVerification.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         PendingVerification.setText("0");
@@ -516,16 +516,15 @@ public class Carrier extends javax.swing.JFrame {
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(62, 62, 62)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(62, 62, 62)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel9)
-                            .addComponent(PendingVerification, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(51, 51, 51)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jLabel9)
+                    .addComponent(PendingVerification, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(28, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

@@ -62,7 +62,7 @@ public class AddProductDialog extends javax.swing.JDialog {
     private void setupDatabaseConnection() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/warehouse", "root", "");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/wms", "root", "");
         } catch (ClassNotFoundException | SQLException e) {
             JOptionPane.showMessageDialog(this, "Database connection error: " + e.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);

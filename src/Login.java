@@ -42,7 +42,7 @@ public class Login extends javax.swing.JFrame {
 
 //    REQUIRED FOR CONNECTION
 //    DB NAME, DRIVER, URL, USERNAME,
-    private static final String DbName = "warehouse";
+    private static final String DbName = "wms";
     private static final String DbDriver = "com.mysql.cj.jdbc.Driver";
     private static final String DbUrl = "jdbc:mysql://localhost:3306/" + DbName;
     private static final String DbUsername = "root";

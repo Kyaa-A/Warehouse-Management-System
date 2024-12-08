@@ -46,7 +46,7 @@ public class AddCarrierDialog extends javax.swing.JDialog {
     private void connectToDatabase() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/warehouse", "root", "");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/wms", "root", "");
         } catch (ClassNotFoundException | SQLException ex) {
             JOptionPane.showMessageDialog(this, "Database connection failed: " + ex.getMessage());
         }
