@@ -1,21 +1,31 @@
+
 import javax.swing.JOptionPane;
+import java.sql.*;
+import javax.swing.table.DefaultTableModel;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
 /**
  *
  * @author Asnari Pacalna
  */
 public class Packing extends javax.swing.JFrame {
 
+    private static final String DbName = "warehouse";
+    private static final String DbDriver = "com.mysql.cj.jdbc.Driver";
+    private static final String DbUrl = "jdbc:mysql://localhost:3306/" + DbName;
+    private static final String DbUsername = "root";
+    private static final String DbPassword = "";
+
     /**
      * Creates new form Packing
      */
     public Packing() {
         initComponents();
+        loadVerifiedOrders();
+        loadPackedOrders();
     }
 
     /**
@@ -486,6 +496,58 @@ public class Packing extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void loadVerifiedOrders() {
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.setRowCount(0); // Clear existing data
+
+        String query = "SELECT o.order_id, p.product_name "
+                + "FROM orders o "
+                + "JOIN order_items oi ON o.order_id = oi.order_id "
+                + "JOIN products p ON oi.product_id = p.product_id "
+                + "WHERE o.status = 'VERIFIED'";
+
+        try (Connection conn = DriverManager.getConnection(DbUrl, DbUsername, DbPassword); PreparedStatement pst = conn.prepareStatement(query); ResultSet rs = pst.executeQuery()) {
+
+            while (rs.next()) {
+                Object[] row = {
+                    rs.getString("order_id"),
+                    rs.getString("product_name")
+                };
+                model.addRow(row);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error loading verified orders: " + e.getMessage());
+        }
+    }
+
+    private void loadPackedOrders() {
+        DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
+        model.setRowCount(0); // Clear existing data
+
+        String query = "SELECT o.order_id, p.product_name, o.label, o.priority "
+                + "FROM orders o "
+                + "JOIN order_items oi ON o.order_id = oi.order_id "
+                + "JOIN products p ON oi.product_id = p.product_id "
+                + "WHERE o.status = 'PACKED'";
+
+        try (Connection conn = DriverManager.getConnection(DbUrl, DbUsername, DbPassword); PreparedStatement pst = conn.prepareStatement(query); ResultSet rs = pst.executeQuery()) {
+
+            while (rs.next()) {
+                Object[] row = {
+                    rs.getString("order_id"),
+                    rs.getString("product_name"),
+                    rs.getString("label"),
+                    rs.getString("priority")
+                };
+                model.addRow(row);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error loading packed orders: " + e.getMessage());
+        }
+    }
+
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // Home button (Dashboard refresh)
         Dashboard dashboard = new Dashboard();
@@ -535,10 +597,10 @@ public class Packing extends javax.swing.JFrame {
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         int choice = JOptionPane.showConfirmDialog(this,
-            "Are you sure you want to logout?",
-            "Logout Confirmation",
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.QUESTION_MESSAGE);
+                "Are you sure you want to logout?",
+                "Logout Confirmation",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE);
 
         if (choice == JOptionPane.YES_OPTION) {
             // Return to login screen
