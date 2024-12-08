@@ -510,26 +510,23 @@ public class Orders extends javax.swing.JFrame {
     private void loadOrdersTable() {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);
-
         try {
             String query = """
             SELECT o.order_id, c.customer_name, 
-            GROUP_CONCAT(p.product_name SEPARATOR ', ') as products,
-            SUM(oi.quantity * p.price) as total,
+            GROUP_CONCAT(p.product_name SEPARATOR ', ') as products, 
+            COALESCE(SUM(oi.quantity * p.price), 0) as total, 
             o.status, o.order_date
             FROM orders o
             JOIN customers c ON o.customer_id = c.customer_id
-            JOIN order_items oi ON o.order_id = oi.order_id
-            JOIN products p ON oi.product_id = p.product_id
+            LEFT JOIN order_items oi ON o.order_id = oi.order_id
+            LEFT JOIN products p ON oi.product_id = p.product_id
             GROUP BY o.order_id, c.customer_name, o.status, o.order_date
             ORDER BY o.order_date DESC
-        """;
-
+            """;
             Statement st = con.createStatement();
             ResultSet rs = st.executeQuery(query);
             SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy");
             DecimalFormat priceFormat = new DecimalFormat("₱#,##0.00");
-
             while (rs.next()) {
                 Object[] row = {
                     rs.getString("order_id"),
@@ -541,7 +538,6 @@ public class Orders extends javax.swing.JFrame {
                 };
                 model.addRow(row);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error loading orders: " + e.getMessage());
