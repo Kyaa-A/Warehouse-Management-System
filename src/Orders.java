@@ -12,6 +12,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.awt.event.ActionListener; 
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -771,7 +772,44 @@ public class Orders extends javax.swing.JFrame {
 
 // Individual button action methods
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {
-        updateStatus("VERIFIED"); // Verify button
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select an order first");
+            return;
+        }
+
+        String orderId = jTable1.getValueAt(selectedRow, 0).toString();
+        String currentStatus = jTable1.getValueAt(selectedRow, 4).toString();
+
+        if (!currentStatus.equals("PENDING")) {
+            JOptionPane.showMessageDialog(this, "Only PENDING orders can be verified.");
+            return;
+        }
+
+        int choice = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to verify this order?",
+                "Verify Order",
+                JOptionPane.YES_NO_OPTION);
+
+        if (choice == JOptionPane.YES_OPTION) {
+            try {
+                String updateQuery = "UPDATE orders SET status = 'VERIFIED', last_updated = NOW() WHERE order_id = ?";
+                PreparedStatement pst = con.prepareStatement(updateQuery);
+                pst.setString(1, orderId);
+                pst.executeUpdate();
+                loadOrdersTable();
+
+                // Restore selection
+                for (int i = 0; i < jTable1.getRowCount(); i++) {
+                    if (jTable1.getValueAt(i, 0).toString().equals(orderId)) {
+                        jTable1.setRowSelectionInterval(i, i);
+                        break;
+                    }
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error updating order status: " + ex.getMessage());
+            }
+        }
     }
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {
@@ -841,7 +879,44 @@ public class Orders extends javax.swing.JFrame {
     }
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {
-        updateStatus("DELIVERED"); // Delivered button
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select an order first");
+            return;
+        }
+
+        String orderId = jTable1.getValueAt(selectedRow, 0).toString();
+        String currentStatus = jTable1.getValueAt(selectedRow, 4).toString();
+
+        if (!currentStatus.equals("SHIPPED")) {
+            JOptionPane.showMessageDialog(this, "Only SHIPPED orders can be marked as delivered.");
+            return;
+        }
+
+        int choice = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to mark this order as delivered?",
+                "Confirm Delivery",
+                JOptionPane.YES_NO_OPTION);
+
+        if (choice == JOptionPane.YES_OPTION) {
+            try {
+                String updateQuery = "UPDATE orders SET status = 'DELIVERED', last_updated = NOW() WHERE order_id = ?";
+                PreparedStatement pst = con.prepareStatement(updateQuery);
+                pst.setString(1, orderId);
+                pst.executeUpdate();
+                loadOrdersTable();
+
+                // Restore selection
+                for (int i = 0; i < jTable1.getRowCount(); i++) {
+                    if (jTable1.getValueAt(i, 0).toString().equals(orderId)) {
+                        jTable1.setRowSelectionInterval(i, i);
+                        break;
+                    }
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error updating order status: " + ex.getMessage());
+            }
+        }
     }
 
     private void updateStatus(String newStatus) {
@@ -856,12 +931,12 @@ public class Orders extends javax.swing.JFrame {
 
         // Validation logic for each status change
         switch (newStatus) {
-            case "VERIFIED":
-                if (!currentStatus.equals("PENDING")) {
-                    JOptionPane.showMessageDialog(this, "Only PENDING orders can be verified.");
-                    return;
-                }
-                break;
+//            case "VERIFIED":
+//                if (!currentStatus.equals("PENDING")) {
+//                    JOptionPane.showMessageDialog(this, "Only PENDING orders can be verified.");
+//                    return;
+//                }
+//                break;
 
             case "PACKED":
                 if (!currentStatus.equals("VERIFIED")) {
@@ -901,11 +976,14 @@ public class Orders extends javax.swing.JFrame {
     }
 
     private void addButtonListeners() {
-        jButton9.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton9ActionPerformed(evt);
-            }
-        });
+        for (ActionListener al : jButton9.getActionListeners()) {
+        jButton9.removeActionListener(al);
+    }
+         jButton9.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jButton9ActionPerformed(evt);
+        }
+    });
 
         jButton7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
