@@ -31,6 +31,7 @@ public class ShipDialog extends javax.swing.JDialog {
         loadCarriers();
         setupTableSelection();
         initButtons();
+        initializeSearchField();
     }
 
     private void setupDatabase() {
@@ -169,7 +170,73 @@ public class ShipDialog extends javax.swing.JDialog {
         }
     }
 
-    
+    private void initializeSearchField() {
+        // Set default text and color
+        jTextField1.setText("Search carriers...");
+        jTextField1.setForeground(java.awt.Color.GRAY);
+
+        // Add focus listener for placeholder text behavior
+        jTextField1.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusGained(java.awt.event.FocusEvent e) {
+                if (jTextField1.getText().equals("Search carriers...")) {
+                    jTextField1.setText("");
+                    jTextField1.setForeground(java.awt.Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                if (jTextField1.getText().isEmpty()) {
+                    jTextField1.setText("Search carriers...");
+                    jTextField1.setForeground(java.awt.Color.GRAY);
+                }
+            }
+        });
+
+        // Add document listener for search functionality
+        jTextField1.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                searchCarriers();
+            }
+
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                searchCarriers();
+            }
+
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                searchCarriers();
+            }
+        });
+    }
+
+// Add this method to handle the search functionality
+    private void searchCarriers() {
+        String searchText = jTextField1.getText().trim().toLowerCase();
+        if (searchText.equals("search carriers...")) {
+            searchText = "";
+        }
+
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.setRowCount(0); // Clear existing rows
+
+        try {
+            String query = "SELECT carrier_name FROM carriers WHERE LOWER(carrier_name) LIKE ? ORDER BY carrier_name";
+            PreparedStatement pst = con.prepareStatement(query);
+            pst.setString(1, "%" + searchText + "%");
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                model.addRow(new Object[]{rs.getString("carrier_name")});
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error searching carriers: " + ex.getMessage());
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
