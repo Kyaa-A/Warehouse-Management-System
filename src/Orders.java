@@ -812,7 +812,32 @@ public class Orders extends javax.swing.JFrame {
     }
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {
-        updateStatus("SHIPPED"); // Ship Order button
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select an order first");
+            return;
+        }
+
+        String orderId = jTable1.getValueAt(selectedRow, 0).toString();
+        String currentStatus = jTable1.getValueAt(selectedRow, 4).toString();
+
+        // Check if order is packed before allowing shipping
+        if (!currentStatus.equals("PACKED")) {
+            JOptionPane.showMessageDialog(this, "Order must be PACKED first before shipping.");
+            return;
+        }
+
+        // Create and show the ShipDialog
+        ShipDialog dialog = new ShipDialog(this, true);
+        // Set the order ID for the dialog
+        dialog.setOrderId(orderId);
+        // Center the dialog relative to the Orders window
+        dialog.setLocationRelativeTo(this);
+        // Show the dialog
+        dialog.setVisible(true);
+
+        // After the dialog is closed, refresh the orders table
+        loadOrdersTable();
     }
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {
@@ -845,13 +870,14 @@ public class Orders extends javax.swing.JFrame {
                 }
                 break;
 
-            case "SHIPPED":
-                if (!currentStatus.equals("PACKED")) {
-                    JOptionPane.showMessageDialog(this, "Order must be PACKED first before shipping.");
-                    return;
-                }
-                break;
-
+            /* Remove or comment out the SHIPPED case since it's handled by the dialog now
+        case "SHIPPED":
+            if (!currentStatus.equals("PACKED")) {
+                JOptionPane.showMessageDialog(this, "Order must be PACKED first before shipping.");
+                return;
+            }
+            break;
+             */
             case "DELIVERED":
                 if (!currentStatus.equals("SHIPPED")) {
                     JOptionPane.showMessageDialog(this, "Order must be SHIPPED first before marking as delivered.");
