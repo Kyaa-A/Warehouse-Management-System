@@ -1,8 +1,10 @@
 
+import java.sql.*;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.sql.*;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -42,6 +44,44 @@ public class PackDialog extends javax.swing.JDialog {
         }
     }
 
+    private String generateTrackingNumber() {
+        try {
+            // First check if there's already a tracking number for this order
+            String checkQuery = "SELECT tracking_number FROM orders WHERE order_id = ?";
+            PreparedStatement checkPst = con.prepareStatement(checkQuery);
+            checkPst.setString(1, orderId);
+            ResultSet rs = checkPst.executeQuery();
+
+            if (rs.next() && rs.getString("tracking_number") != null) {
+                return rs.getString("tracking_number");
+            }
+
+            // Get the current timestamp in milliseconds for uniqueness
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyMMddHHmmss");
+            String timestamp = dateFormat.format(new Date());
+
+            // Get a sequence number for additional uniqueness
+            String seqQuery = "SELECT COUNT(*) as seq FROM orders WHERE DATE(last_updated) = CURDATE() AND tracking_number IS NOT NULL";
+            Statement seqSt = con.createStatement();
+            ResultSet seqRs = seqSt.executeQuery(seqQuery);
+
+            int sequence = 1;
+            if (seqRs.next()) {
+                sequence = seqRs.getInt("seq") + 1;
+            }
+
+            // Format: WH-YYMMDDHHMMSS-SEQ
+            // WH = Warehouse
+            // YYMMDDHHMMSS = Year, Month, Day, Hour, Minute, Second
+            // SEQ = Sequence number for the day (001, 002, etc.)
+            return String.format("WH-%s-%03d", timestamp, sequence);
+
+        } catch (SQLException ex) {
+            // If there's any error, fall back to a simpler format
+            return "WH-" + System.currentTimeMillis();
+        }
+    }
+
     private void initializeButtons() {
         // Initialize Pack button action listener
         jButton2.addActionListener(new ActionListener() {
@@ -61,24 +101,27 @@ public class PackDialog extends javax.swing.JDialog {
     }
 
     private void handlePackButton() {
-        // Get the selected label and priority
         String label = jComboBox2.getSelectedItem().toString();
         String priority = jComboBox1.getSelectedItem().toString();
 
+        // Generate tracking number
+        String trackingNumber = generateTrackingNumber();
+
         try {
             // Prepare the SQL update query
-            String updateQuery = "UPDATE orders SET status = 'PACKED', label = ?, priority = ?, last_updated = NOW() WHERE order_id = ?";
+            String updateQuery = "UPDATE orders SET status = 'PACKED', label = ?, priority = ?, tracking_number = ?, last_updated = NOW() WHERE order_id = ?";
             PreparedStatement pst = con.prepareStatement(updateQuery);
             pst.setString(1, label);
             pst.setString(2, priority);
-            pst.setString(3, orderId);
+            pst.setString(3, trackingNumber);
+            pst.setString(4, orderId);
 
             // Execute the update
             int result = pst.executeUpdate();
 
             if (result > 0) {
                 JOptionPane.showMessageDialog(this,
-                        "Order packed successfully!",
+                        "Order packed successfully!\nTracking Number: " + trackingNumber,
                         "Success",
                         JOptionPane.INFORMATION_MESSAGE);
                 dispose(); // Close the dialog
