@@ -775,7 +775,40 @@ public class Orders extends javax.swing.JFrame {
     }
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {
-        updateStatus("PACKED"); // Pack Order button
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select an order first");
+            return;
+        }
+
+        String orderId = jTable1.getValueAt(selectedRow, 0).toString();
+        String currentStatus = jTable1.getValueAt(selectedRow, 4).toString();
+
+        // Check if order is verified before allowing packing
+        if (!currentStatus.equals("VERIFIED")) {
+            JOptionPane.showMessageDialog(this, "Order must be VERIFIED first before packing.");
+            return;
+        }
+
+        // Create and show the PackDialog
+        PackDialog dialog = new PackDialog(this, true);
+        // Set the order ID for the dialog
+        dialog.setOrderId(orderId);
+        // Center the dialog relative to the Orders window
+        dialog.setLocationRelativeTo(this);
+        // Show the dialog
+        dialog.setVisible(true);
+
+        // After the dialog is closed, refresh the orders table
+        loadOrdersTable();
+    }
+
+    private void openPackDialog(String orderId) {
+        PackDialog dialog = new PackDialog(this, true);
+        dialog.setOrderId(orderId);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+        loadOrdersTable();
     }
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {
