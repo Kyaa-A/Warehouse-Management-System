@@ -595,7 +595,7 @@ public class Products extends javax.swing.JFrame {
                 "Name", "Price", "Stock", "Weight", "Date"
             }
         ));
-        jTable1.setRowHeight(30);
+        jTable1.setRowHeight(40);
         jScrollPane2.setViewportView(jTable1);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);

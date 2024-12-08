@@ -292,7 +292,7 @@ public class Orders extends javax.swing.JFrame {
                 "Order ID", "Customer", "Products", "Total", "Status", "Date"
             }
         ));
-        jTable1.setRowHeight(35);
+        jTable1.setRowHeight(40);
         jScrollPane1.setViewportView(jTable1);
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -335,6 +335,11 @@ public class Orders extends javax.swing.JFrame {
         jButton7.setText("Pack Order");
 
         jButton9.setText("Verify ");
+        jButton9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton9ActionPerformed(evt);
+            }
+        });
 
         jButton10.setText("Delivered");
 

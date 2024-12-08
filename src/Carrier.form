@@ -635,7 +635,7 @@
                     <Column editable="true" title="Status" type="java.lang.Object"/>
                   </Table>
                 </Property>
-                <Property name="rowHeight" type="int" value="35"/>
+                <Property name="rowHeight" type="int" value="40"/>
               </Properties>
             </Component>
           </SubComponents>

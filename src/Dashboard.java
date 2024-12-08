@@ -398,7 +398,7 @@ public class Dashboard extends javax.swing.JFrame {
             }
         ));
         jTable1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        jTable1.setRowHeight(35);
+        jTable1.setRowHeight(40);
         jScrollPane1.setViewportView(jTable1);
 
         jButton7.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asnari Pacalna\\Documents\\NetBeansProjects\\WarehouseSystem\\src\\Icons\\search.png")); // NOI18N

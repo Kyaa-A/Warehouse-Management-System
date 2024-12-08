@@ -60,7 +60,7 @@ public class Carrier extends javax.swing.JFrame {
     private void connectToDatabase() throws SQLException {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/warehouse", "root", "");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/wms", "root", "");
             st = con.createStatement();
             if (con != null) {
                 System.out.println("Carrier Database Connection Successful");
@@ -136,7 +136,7 @@ public class Carrier extends javax.swing.JFrame {
                     rs.getString("Delivery Time"),
                     rs.getString("Status")
                 };
-                model.addRow(row);
+                model.insertRow(0, row);
             }
 
         } catch (SQLException e) {
@@ -631,7 +631,7 @@ public class Carrier extends javax.swing.JFrame {
                 "ID", "Name", "Contact Info", "Service Level", "Average Work", "Delivery Time", "Status"
             }
         ));
-        jTable1.setRowHeight(35);
+        jTable1.setRowHeight(40);
         jScrollPane1.setViewportView(jTable1);
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N

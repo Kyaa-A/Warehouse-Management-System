@@ -482,7 +482,7 @@
                     <Column editable="true" title="Date" type="java.lang.Object"/>
                   </Table>
                 </Property>
-                <Property name="rowHeight" type="int" value="30"/>
+                <Property name="rowHeight" type="int" value="40"/>
               </Properties>
             </Component>
           </SubComponents>
