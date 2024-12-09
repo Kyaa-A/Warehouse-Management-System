@@ -283,10 +283,9 @@ public class Login extends javax.swing.JFrame {
                     UserProduct userproduct = new UserProduct();
                     userproduct.setVisible(true);
                     userproduct.setLocationRelativeTo(null);
-                } 
-                else if (userRole == 2) {
+                } else if (userRole == 2) {
                     // Admin - redirect to Admin panel
-                    
+
                     Dashboard dashboard = new Dashboard();
                     dashboard.setVisible(true);
                     dashboard.setLocationRelativeTo(null);
