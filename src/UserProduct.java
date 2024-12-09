@@ -3,6 +3,9 @@ import javax.swing.JOptionPane;
 import javax.swing.*;
 import java.awt.*;
 import java.sql.*;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.io.ByteArrayInputStream;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -25,31 +28,25 @@ public class UserProduct extends javax.swing.JFrame {
 
     private void loadProducts() {
         try {
-            // Create database connection
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/wms", "root", "");
-
-            // Query to get active products
-            String query = "SELECT product_id, product_name, price, stock, category FROM products WHERE active = 1";
+            String query = "SELECT product_id, product_name, price, stock, category, image_data FROM products WHERE active = 1";
             PreparedStatement pst = conn.prepareStatement(query);
             ResultSet rs = pst.executeQuery();
 
-            // Clear existing panels
             jPanel5.removeAll();
+            jPanel5.setLayout(new GridLayout(0, 3, 10, 10));
 
-            // Create grid layout for products
-            jPanel5.setLayout(new GridLayout(0, 3, 10, 10)); // 3 columns, 10px gaps
-            
             while (rs.next()) {
                 JPanel productPanel = createProductPanel(
                         rs.getString("product_name"),
                         rs.getDouble("price"),
-                        rs.getInt("stock")
+                        rs.getInt("stock"),
+                        rs.getBytes("image_data")
                 );
                 jPanel5.add(productPanel);
             }
 
-            // Refresh the panel
             jPanel5.revalidate();
             jPanel5.repaint();
 
@@ -60,10 +57,23 @@ public class UserProduct extends javax.swing.JFrame {
     }
 // Helper method to create product panels
 
-    private JPanel createProductPanel(String name, double price, int stock) {
+    private JPanel createProductPanel(String name, double price, int stock, byte[] imageData) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        // Product image
+        if (imageData != null && imageData.length > 0) {
+            ImageIcon icon = new ImageIcon(imageData);
+            Image img = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+            JLabel imageLabel = new JLabel(new ImageIcon(img));
+            imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            panel.add(imageLabel);
+        } else {
+            JLabel noImageLabel = new JLabel("No Image");
+            noImageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            panel.add(noImageLabel);
+        }
 
         // Product name
         JLabel nameLabel = new JLabel(name);
@@ -358,19 +368,19 @@ public class UserProduct extends javax.swing.JFrame {
         jButton7.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jButton7.setForeground(new java.awt.Color(255, 255, 255));
         jButton7.setText("TOTAL");
-        jButton7.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(179, 1, 104), 1, true));
+        jButton7.setBorder(null);
 
         jButton9.setBackground(new java.awt.Color(179, 1, 104));
         jButton9.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jButton9.setForeground(new java.awt.Color(255, 255, 255));
         jButton9.setText("RECEIPT");
-        jButton9.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(179, 1, 104), 1, true));
+        jButton9.setBorder(null);
 
         jButton11.setBackground(new java.awt.Color(179, 1, 104));
         jButton11.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jButton11.setForeground(new java.awt.Color(255, 255, 255));
         jButton11.setText("RESET");
-        jButton11.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(179, 1, 104), 1, true));
+        jButton11.setBorder(null);
 
         jPanel5.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153), 2));
 
@@ -496,14 +506,14 @@ public class UserProduct extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 529, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 522, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(7, 7, 7)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButton9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButton11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(8, Short.MAX_VALUE))
+                .addContainerGap(9, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

@@ -243,17 +243,17 @@
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="jPanel6" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="jScrollPane1" min="-2" pref="529" max="-2" attributes="0"/>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="jScrollPane1" min="-2" pref="522" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jButton7" alignment="0" max="32767" attributes="0"/>
-                              <Component id="jButton9" alignment="0" max="32767" attributes="0"/>
-                              <Component id="jButton11" alignment="0" max="32767" attributes="0"/>
+                              <Component id="jButton9" max="32767" attributes="0"/>
+                              <Component id="jButton7" max="32767" attributes="0"/>
+                              <Component id="jButton11" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                       <Component id="jPanel4" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="8" max="32767" attributes="0"/>
+                  <EmptySpace pref="9" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -468,11 +468,7 @@
             </Property>
             <Property name="text" type="java.lang.String" value="TOTAL"/>
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-              <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
-                <LineBorder roundedCorners="true">
-                  <Color PropertyName="color" blue="68" green="1" red="b3" type="rgb"/>
-                </LineBorder>
-              </Border>
+              <Border info="null"/>
             </Property>
           </Properties>
         </Component>
@@ -489,11 +485,7 @@
             </Property>
             <Property name="text" type="java.lang.String" value="RECEIPT"/>
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-              <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
-                <LineBorder roundedCorners="true">
-                  <Color PropertyName="color" blue="68" green="1" red="b3" type="rgb"/>
-                </LineBorder>
-              </Border>
+              <Border info="null"/>
             </Property>
           </Properties>
         </Component>
@@ -510,11 +502,7 @@
             </Property>
             <Property name="text" type="java.lang.String" value="RESET"/>
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-              <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
-                <LineBorder roundedCorners="true">
-                  <Color PropertyName="color" blue="68" green="1" red="b3" type="rgb"/>
-                </LineBorder>
-              </Border>
+              <Border info="null"/>
             </Property>
           </Properties>
         </Component>
