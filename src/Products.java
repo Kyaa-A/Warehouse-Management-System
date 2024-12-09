@@ -237,7 +237,7 @@ public class Products extends javax.swing.JFrame {
     private void Connection() throws SQLException {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/warehouse", "root", "");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/wms", "root", "");
             st = con.createStatement();
             if (con != null) {
                 System.out.println("Products Database Connection Successful");
