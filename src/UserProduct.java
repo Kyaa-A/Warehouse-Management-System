@@ -172,6 +172,85 @@ public class UserProduct extends javax.swing.JFrame {
         return panel;
     }
 
+    private void generateReceipt(DefaultTableModel model, double total, double cash, double balance) {
+        StringBuilder receipt = new StringBuilder();
+
+        // Receipt header
+        receipt.append("===========================================\n");
+        receipt.append("               SALES RECEIPT               \n");
+        receipt.append("===========================================\n");
+        receipt.append(String.format("Date: %s\n",
+                java.time.LocalDateTime.now().format(
+                        java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))));
+        receipt.append("-------------------------------------------\n");
+
+        // Header with fixed spacing
+        receipt.append(String.format("%-4s %-20s %8s %12s\n",
+                "No.", "Product", "Qty", "Price"));
+        receipt.append("-------------------------------------------\n");
+
+        // Add items
+        for (int i = 0; i < model.getRowCount(); i++) {
+            String product = model.getValueAt(i, 1).toString();
+            int quantity = (int) model.getValueAt(i, 2);
+            double price = (double) model.getValueAt(i, 3);
+
+            // Truncate product name if too long
+            if (product.length() > 20) {
+                product = product.substring(0, 17) + "...";
+            }
+
+            receipt.append(String.format("%-4d %-20s %8d %,12.2f\n",
+                    (i + 1), product, quantity, price));
+        }
+
+        // Receipt footer
+        receipt.append("-------------------------------------------\n");
+        receipt.append(String.format("%1s %,12.2f\n", "Total Amount:  ₱", total));
+        receipt.append(String.format("%1s %,12.2f\n", "Cash:               ₱", cash));
+        receipt.append(String.format("%1s %,12.2f\n", "Change:           ₱", balance));
+        receipt.append("===========================================\n");
+        receipt.append("          Thank you for shopping!          \n");
+        receipt.append("===========================================\n");
+
+        // Display the receipt
+        jTextArea1.setText(receipt.toString());
+    }
+
+    private void initializeCashField() {
+        // Remove default text
+        jTextField2.setText("");
+
+        // Add document listener to validate input
+        jTextField2.getDocument().addDocumentListener(new DocumentListener() {
+            public void changedUpdate(DocumentEvent e) {
+                validateCash();
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                validateCash();
+            }
+
+            public void insertUpdate(DocumentEvent e) {
+                validateCash();
+            }
+        });
+    }
+
+    private void validateCash() {
+        try {
+            String text = jTextField2.getText().trim();
+            if (!text.isEmpty()) {
+                double cash = Double.parseDouble(text);
+                if (cash < 0) {
+                    jTextField2.setText("");
+                }
+            }
+        } catch (NumberFormatException e) {
+            jTextField2.setText("");
+        }
+    }
+
     private void updatePurchaseStatus(int id, String name, double price, int quantity, boolean isPurchased) {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
 
@@ -485,8 +564,13 @@ public class UserProduct extends javax.swing.JFrame {
         jButton7.setBackground(new java.awt.Color(179, 1, 104));
         jButton7.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jButton7.setForeground(new java.awt.Color(255, 255, 255));
-        jButton7.setText("TOTAL");
+        jButton7.setText("PAY");
         jButton7.setBorder(null);
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
 
         jButton9.setBackground(new java.awt.Color(179, 1, 104));
         jButton9.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -700,6 +784,120 @@ public class UserProduct extends javax.swing.JFrame {
             this.dispose(); // Close the dashboard
         }        // TODO add your handling code here:
     }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+
+        // Check if cart is empty
+        if (model.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this,
+                    "No items in cart!",
+                    "Error",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Calculate total
+        double total = calculateTotal(model);
+        jLabel9.setText(String.format("%.2f", total));
+
+        // Get and validate cash amount
+        double cash = getCashAmount();
+        if (cash < 0) {
+            return; // Invalid input was handled by getCashAmount
+        }
+
+        // Check if cash is sufficient
+        if (cash < total) {
+            JOptionPane.showMessageDialog(this,
+                    "Insufficient cash amount!",
+                    "Error",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Calculate and display balance
+        double balance = cash - total;
+        jLabel3.setText(String.format("%.2f", balance));
+
+        // Generate and display receipt
+        generateReceipt(model, total, cash, balance);
+    }
+
+    private double calculateTotal(DefaultTableModel model) {
+        double total = 0;
+        for (int i = 0; i < model.getRowCount(); i++) {
+            total += (double) model.getValueAt(i, 3);
+        }
+        return total;
+    }
+
+    private double getCashAmount() {
+        String cashText = jTextField2.getText().trim();
+        if (cashText.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Please enter cash amount!",
+                    "Error",
+                    JOptionPane.WARNING_MESSAGE);
+            return -1;
+        }
+
+        try {
+            return Double.parseDouble(cashText);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Invalid cash amount!",
+                    "Error",
+                    JOptionPane.WARNING_MESSAGE);
+            return -1;
+        }
+    }
+
+    private void generateReceipt(double total, double cash, double balance) {
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        StringBuilder receipt = new StringBuilder();
+
+        // Receipt header
+        receipt.append("===========================================\n");
+        receipt.append("               SALES RECEIPT               \n");
+        receipt.append("===========================================\n");
+        receipt.append(String.format("Date: %s\n", java.time.LocalDateTime.now().format(
+                java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))));
+        receipt.append("-------------------------------------------\n");
+
+        // Header with fixed spacing
+        receipt.append(String.format("%-4s %-20s %8s %12s\n",
+                "No.", "Product", "Qty", "Price"));
+        receipt.append("-------------------------------------------\n");
+
+        // Add items with fixed spacing
+        for (int i = 0; i < model.getRowCount(); i++) {
+            String product = model.getValueAt(i, 1).toString();
+            int quantity = (int) model.getValueAt(i, 2);
+            double price = (double) model.getValueAt(i, 3);
+
+            // Truncate product name if too long
+            if (product.length() > 20) {
+                product = product.substring(0, 17) + "...";
+            }
+
+            // Format each line with fixed spacing
+            receipt.append(String.format("%-4d %-20s %8d %,12.2f\n",
+                    (i + 1), product, quantity, price));
+        }
+
+        // Receipt footer with properly aligned totals
+        receipt.append("-------------------------------------------\n");
+        receipt.append(String.format("%34s %,12.2f\n", "Total Amount: ₱", total));
+        receipt.append(String.format("%34s %,12.2f\n", "Cash: ₱", cash));
+        receipt.append(String.format("%34s %,12.2f\n", "Change: ₱", balance));
+        receipt.append("===========================================\n");
+        receipt.append("          Thank you for shopping!          \n");
+        receipt.append("===========================================\n");
+
+        // Set the receipt text
+        jTextArea1.setText(receipt.toString());
+    }//GEN-LAST:event_jButton7ActionPerformed
 
     /**
      * @param args the command line arguments
