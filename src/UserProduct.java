@@ -9,6 +9,11 @@ import java.io.ByteArrayInputStream;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -28,12 +33,10 @@ public class UserProduct extends javax.swing.JFrame {
     public UserProduct() {
         initComponents();
 
-        // Add category filter
         categoryComboBox = new JComboBox<>(new String[]{"All", "Electronics", "Accessories", "Components", "Peripherals", "Storage", "Networking"});
         categoryComboBox.addActionListener(e -> filterProducts());
         jPanel6.add(categoryComboBox);
 
-        // Add search bar listener
         jTextField1.getDocument().addDocumentListener(new DocumentListener() {
             public void changedUpdate(DocumentEvent e) {
                 filterProducts();
@@ -48,12 +51,20 @@ public class UserProduct extends javax.swing.JFrame {
             }
         });
 
+        jComboBox1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                filterProducts();
+            }
+        });
+
         loadProducts("", "All");
     }
 
     private void filterProducts() {
-        String searchText = jTextField1.getText();
-        String category = (String) categoryComboBox.getSelectedItem();
+        String searchText = jTextField1.getText().trim();
+        String category = (String) jComboBox1.getSelectedItem();
+        System.out.println("Filtering - Search: " + searchText + ", Category: " + category);
         loadProducts(searchText, category);
     }
 // Add this method to load products
@@ -63,24 +74,29 @@ public class UserProduct extends javax.swing.JFrame {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/wms", "root", "");
 
-            String query = "SELECT product_id, product_name, price, stock, category, image_data FROM products WHERE active = 1";
+            StringBuilder queryBuilder = new StringBuilder("SELECT product_id, product_name, price, stock, category, image_data FROM products WHERE active = 1");
+
+            List<String> conditions = new ArrayList<>();
+            List<Object> parameters = new ArrayList<>();
 
             if (!searchText.isEmpty()) {
-                query += " AND product_name LIKE ?";
+                conditions.add("product_name LIKE ?");
+                parameters.add("%" + searchText + "%");
             }
 
             if (!category.equals("All")) {
-                query += " AND category = ?";
+                conditions.add("category = ?");
+                parameters.add(category);
             }
 
-            PreparedStatement pst = conn.prepareStatement(query);
-
-            int paramIndex = 1;
-            if (!searchText.isEmpty()) {
-                pst.setString(paramIndex++, "%" + searchText + "%");
+            if (!conditions.isEmpty()) {
+                queryBuilder.append(" AND ").append(String.join(" AND ", conditions));
             }
-            if (!category.equals("All")) {
-                pst.setString(paramIndex, category);
+
+            PreparedStatement pst = conn.prepareStatement(queryBuilder.toString());
+
+            for (int i = 0; i < parameters.size(); i++) {
+                pst.setObject(i + 1, parameters.get(i));
             }
 
             ResultSet rs = pst.executeQuery();
@@ -101,6 +117,9 @@ public class UserProduct extends javax.swing.JFrame {
             jPanel5.revalidate();
             jPanel5.repaint();
 
+            rs.close();
+            pst.close();
+            conn.close();
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error loading products: " + e.getMessage());
