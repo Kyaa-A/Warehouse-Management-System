@@ -206,9 +206,9 @@
               <Font name="Segoe UI" size="18" style="0"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="2" name="C:\Users\Asnari Pacalna\Documents\NetBeansProjects\WarehouseSystem\src\Icons\reports-black.png"/>
+              <Image iconType="2" name="C:\Users\Asnari Pacalna\Documents\NetBeansProjects\WarehouseSystem\src\Icons\settings-black.png"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Reports"/>
+            <Property name="text" type="java.lang.String" value="Settings"/>
             <Property name="horizontalAlignment" type="int" value="2"/>
           </Properties>
           <Events>
