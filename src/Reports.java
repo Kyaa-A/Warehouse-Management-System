@@ -49,6 +49,15 @@ public class Reports extends javax.swing.JFrame {
             }
         });
 
+        jButton7.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AddUserDialog dialog = new AddUserDialog(Reports.this, true);
+                dialog.setVisible(true);
+                // Refresh the table after the dialog is closed
+                loadAccountDetails();
+            }
+        });
     }
 
     private void updateSelectedUserPassword() {
@@ -333,6 +342,11 @@ public class Reports extends javax.swing.JFrame {
         jButton7.setForeground(new java.awt.Color(255, 255, 255));
         jButton7.setText("Add");
         jButton7.setBorder(null);
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All", "Users", "Admin" }));
 
@@ -615,6 +629,10 @@ public class Reports extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Please select a user to update.");
         }
     }//GEN-LAST:event_jButton12ActionPerformed
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton7ActionPerformed
 
     /**
      * @param args the command line arguments
