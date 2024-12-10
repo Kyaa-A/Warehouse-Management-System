@@ -45,7 +45,7 @@ public class Reports extends javax.swing.JFrame {
         jButton12.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                updateSelectedUserPassword();
+                jButton12ActionPerformed(e);
             }
         });
 
@@ -517,14 +517,8 @@ public class Reports extends javax.swing.JFrame {
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
         int selectedRow = jTable1.getSelectedRow();
         if (selectedRow != -1) {
-            // Get the username from the selected row
-            Object usernameObj = jTable1.getValueAt(selectedRow, 0);
-            String username;
-            if (usernameObj instanceof Integer) {
-                username = String.valueOf(usernameObj);
-            } else {
-                username = (String) usernameObj;
-            }
+            // Get the username from the selected row (assuming it's in the second column, index 1)
+            String username = jTable1.getValueAt(selectedRow, 1).toString();
 
             // Get the new password from the password field
             String newPassword = jPasswordField1.getText();
@@ -532,11 +526,12 @@ public class Reports extends javax.swing.JFrame {
             if (!newPassword.isEmpty()) {
                 try {
                     // Update the password in the database
-                    String updateQuery = "UPDATE accountdetails SET password = ? WHERE username = ?";
+                    String updateQuery = "UPDATE accountdetails SET accPassword = ? WHERE accUsername = ?";
                     try (PreparedStatement pstmt = connection.prepareStatement(updateQuery)) {
                         pstmt.setString(1, newPassword);
                         pstmt.setString(2, username);
                         int affectedRows = pstmt.executeUpdate();
+
                         if (affectedRows > 0) {
                             JOptionPane.showMessageDialog(this, "Password updated successfully!");
                             // Refresh the table to reflect the changes
