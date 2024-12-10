@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.table.DefaultTableModel;
 
 
 /*
@@ -32,11 +33,7 @@ public class UserProduct extends javax.swing.JFrame {
      */
     public UserProduct() {
         initComponents();
-
-        categoryComboBox = new JComboBox<>(new String[]{"All", "Electronics", "Accessories", "Components", "Peripherals", "Storage", "Networking"});
-        categoryComboBox.addActionListener(e -> filterProducts());
-        jPanel6.add(categoryComboBox);
-
+        jComboBox1.addActionListener(e -> filterProducts());
         jTextField1.getDocument().addDocumentListener(new DocumentListener() {
             public void changedUpdate(DocumentEvent e) {
                 filterProducts();
@@ -50,14 +47,6 @@ public class UserProduct extends javax.swing.JFrame {
                 filterProducts();
             }
         });
-
-        jComboBox1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                filterProducts();
-            }
-        });
-
         loadProducts("", "All");
     }
 
@@ -73,9 +62,7 @@ public class UserProduct extends javax.swing.JFrame {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/wms", "root", "");
-
             StringBuilder queryBuilder = new StringBuilder("SELECT product_id, product_name, price, stock, category, image_data FROM products WHERE active = 1");
-
             List<String> conditions = new ArrayList<>();
             List<Object> parameters = new ArrayList<>();
 
@@ -83,29 +70,26 @@ public class UserProduct extends javax.swing.JFrame {
                 conditions.add("product_name LIKE ?");
                 parameters.add("%" + searchText + "%");
             }
-
             if (!category.equals("All")) {
                 conditions.add("category = ?");
                 parameters.add(category);
             }
-
             if (!conditions.isEmpty()) {
                 queryBuilder.append(" AND ").append(String.join(" AND ", conditions));
             }
 
             PreparedStatement pst = conn.prepareStatement(queryBuilder.toString());
-
             for (int i = 0; i < parameters.size(); i++) {
                 pst.setObject(i + 1, parameters.get(i));
             }
 
             ResultSet rs = pst.executeQuery();
-
             jPanel5.removeAll();
             jPanel5.setLayout(new GridLayout(0, 3, 10, 10));
 
             while (rs.next()) {
                 JPanel productPanel = createProductPanel(
+                        rs.getInt("product_id"),
                         rs.getString("product_name"),
                         rs.getDouble("price"),
                         rs.getInt("stock"),
@@ -116,7 +100,6 @@ public class UserProduct extends javax.swing.JFrame {
 
             jPanel5.revalidate();
             jPanel5.repaint();
-
             rs.close();
             pst.close();
             conn.close();
@@ -127,20 +110,25 @@ public class UserProduct extends javax.swing.JFrame {
     }
 // Helper method to create product panels
 
-    private JPanel createProductPanel(String name, double price, int stock, byte[] imageData) {
+    private JPanel createProductPanel(int id, String name, double price, int stock, byte[] imageData) {
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        panel.setPreferredSize(new Dimension(180, 300)); // Set a fixed size for the panel
+        panel.setPreferredSize(new Dimension(180, 300));
+
+        JSpinner quantitySpinner = new JSpinner(new SpinnerNumberModel(0, 0, stock, 1));
+        JCheckBox purchaseBox = new JCheckBox("Purchase");
+
+        quantitySpinner.addChangeListener(e -> updatePurchaseStatus(id, name, price, (int) quantitySpinner.getValue(), purchaseBox.isSelected()));
+        purchaseBox.addActionListener(e -> updatePurchaseStatus(id, name, price, (int) quantitySpinner.getValue(), purchaseBox.isSelected()));
 
         // Product image
         if (imageData != null && imageData.length > 0) {
             try {
                 BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(imageData));
-                int panelWidth = 200; // Match the panel width
-                int panelHeight = 150; // Set a fixed height for the image
-
+                int panelWidth = 200;
+                int panelHeight = 150;
                 Image scaledImage = originalImage.getScaledInstance(panelWidth, panelHeight, Image.SCALE_SMOOTH);
                 JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
                 imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -158,32 +146,19 @@ public class UserProduct extends javax.swing.JFrame {
             panel.add(noImageLabel);
         }
 
-        // Product name
         JLabel nameLabel = new JLabel(name);
         nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
 
-        // Price
         JLabel priceLabel = new JLabel(String.format("Price: ₱%.2f", price));
         priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Quantity spinner
-        JSpinner quantitySpinner = new JSpinner(new SpinnerNumberModel(0, 0, stock, 1));
-        quantitySpinner.setMaximumSize(new Dimension(80, 25));
-        quantitySpinner.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        // Purchase checkbox
-        JCheckBox purchaseBox = new JCheckBox("Purchase");
-        purchaseBox.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        // Add components
         panel.add(Box.createVerticalStrut(10));
         panel.add(nameLabel);
         panel.add(Box.createVerticalStrut(5));
         panel.add(priceLabel);
         panel.add(Box.createVerticalStrut(5));
 
-        // Quantity label and spinner in one panel
         JPanel quantityPanel = new JPanel();
         quantityPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         quantityPanel.add(new JLabel("Quantity:"));
@@ -195,6 +170,41 @@ public class UserProduct extends javax.swing.JFrame {
         panel.add(Box.createVerticalStrut(10));
 
         return panel;
+    }
+
+    private void updatePurchaseStatus(int id, String name, double price, int quantity, boolean isPurchased) {
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+
+        // Check if the product is already in the table
+        for (int i = 0; i < model.getRowCount(); i++) {
+            if ((int) model.getValueAt(i, 0) == id) {
+                if (isPurchased && quantity > 0) {
+                    // Update existing row
+                    model.setValueAt(quantity, i, 2);
+                    model.setValueAt(price * quantity, i, 3);
+                } else {
+                    // Remove row if unchecked or quantity is 0
+                    model.removeRow(i);
+                }
+                updateTotal();
+                return;
+            }
+        }
+
+        // Add new row if not found and is purchased
+        if (isPurchased && quantity > 0) {
+            model.addRow(new Object[]{id, name, quantity, price * quantity});
+        }
+        updateTotal();
+    }
+
+    private void updateTotal() {
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        double total = 0;
+        for (int i = 0; i < model.getRowCount(); i++) {
+            total += (double) model.getValueAt(i, 3);
+        }
+        jLabel9.setText(String.format("%.2f", total));
     }
 
     /**
@@ -374,7 +384,7 @@ public class UserProduct extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane3)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel8Layout.setVerticalGroup(
@@ -522,7 +532,9 @@ public class UserProduct extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jCheckBox1))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addComponent(jCheckBox1)))
                         .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel4)
@@ -631,7 +643,7 @@ public class UserProduct extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 864, Short.MAX_VALUE))
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 864, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
