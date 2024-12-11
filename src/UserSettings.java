@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.DriverManager;
-
+import java.sql.ResultSet;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -27,6 +27,7 @@ public class UserSettings extends javax.swing.JFrame {
         initComponents();
         setupChangePasswordField();
         initializeDatabaseConnection();
+        loadUserCredentials();
 
     }
 
@@ -36,6 +37,34 @@ public class UserSettings extends javax.swing.JFrame {
         Login login = new Login();
         login.setVisible(true);
         login.setLocationRelativeTo(null);
+    }
+
+    private void loadUserCredentials() {
+        if (connection == null) {
+            JOptionPane.showMessageDialog(this, "Database connection is not established.");
+            return;
+        }
+
+        try {
+            String query = "SELECT c.email, c.phone, c.address FROM customers c "
+                    + "JOIN accountdetails a ON c.user_id = a.user_id "
+                    + "WHERE a.accUsername = ?";
+
+            PreparedStatement pst = connection.prepareStatement(query);
+            pst.setString(1, loggedInUsername);
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                jTextField3.setText(rs.getString("email")); // Email field
+                jPasswordField2.setText(rs.getString("phone")); // Phone field
+                jPasswordField3.setText(rs.getString("address")); // Address field
+            }
+            rs.close();
+            pst.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error loading credentials: " + e.getMessage());
+        }
     }
 
     private void initializeDatabaseConnection() {
@@ -279,9 +308,9 @@ public class UserSettings extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(74, 74, 74)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
+                .addGap(34, 34, 34)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(64, 64, 64))
+                .addContainerGap(100, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -322,7 +351,7 @@ public class UserSettings extends javax.swing.JFrame {
         UserProduct userproduct = new UserProduct(loggedInUsername);
         userproduct.setVisible(true);
         userproduct.setLocationRelativeTo(null);
-        this.dispose(); 
+        this.dispose();
     }//GEN-LAST:event_jButton12ActionPerformed
 
     private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
@@ -398,7 +427,53 @@ public class UserSettings extends javax.swing.JFrame {
         super.dispose();
     }
     private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
-        // TODO add your handling code here:
+        String email = jTextField3.getText().trim();
+        String phone = jPasswordField2.getText().trim();
+        String address = jPasswordField3.getText().trim();
+
+        // Basic validation
+        if (email.isEmpty() || phone.isEmpty() || address.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "All fields are required!",
+                    "Validation Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            // Create a new connection
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/wms", "root", "");
+
+            // First update customers table
+            String updateCustomerQuery = "UPDATE customers c "
+                    + "JOIN accountdetails a ON c.user_id = a.user_id "
+                    + "SET c.email = ?, c.phone = ?, c.address = ? "
+                    + "WHERE a.accUsername = ?";
+
+            PreparedStatement pst = conn.prepareStatement(updateCustomerQuery);
+            pst.setString(1, email);
+            pst.setString(2, phone);
+            pst.setString(3, address);
+            pst.setString(4, loggedInUsername);
+
+            int affectedRows = pst.executeUpdate();
+
+            if (affectedRows > 0) {
+                JOptionPane.showMessageDialog(this, "Credentials updated successfully!");
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to update credentials.");
+            }
+
+            pst.close();
+            conn.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Error updating credentials: " + e.getMessage(),
+                    "Database Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButton16ActionPerformed
 
     /**
