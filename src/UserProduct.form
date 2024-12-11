@@ -372,6 +372,7 @@
                             <Column editable="true" title="Price" type="java.lang.Object"/>
                           </Table>
                         </Property>
+                        <Property name="rowHeight" type="int" value="40"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -544,6 +545,9 @@
               <Border info="null"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton11ActionPerformed"/>
+          </Events>
         </Component>
         <Container class="javax.swing.JScrollPane" name="jScrollPane1">
 
