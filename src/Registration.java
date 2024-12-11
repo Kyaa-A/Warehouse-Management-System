@@ -178,20 +178,20 @@ public class Registration extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(156, 156, 156)
-                                .addComponent(jLabel1))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGap(170, 170, 170)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(152, 152, 152)
+                                .addComponent(jLabel1)))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(162, 162, 162)
+                .addGap(139, 139, 139)
                 .addComponent(jLabel1)
-                .addGap(18, 18, 18)
+                .addGap(41, 41, 41)
                 .addComponent(jLabel2)
                 .addGap(12, 12, 12)
                 .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -249,7 +249,6 @@ public class Registration extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
         String username, password;
         if ("".equals(txtUsername.getText())) {
             JOptionPane.showMessageDialog(new JFrame(), "Required Username");
@@ -259,15 +258,25 @@ public class Registration extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(new JFrame(), "Required Password");
             return;
         }
+
+        Connection conn = null;
+        PreparedStatement pstAccount = null;
+        PreparedStatement pstCustomer = null;
+        ResultSet rs = null;
+
         try {
             username = txtUsername.getText();
             password = txtPassword.getText();
+
+            // Start transaction
+            conn = DriverManager.getConnection(DbUrl, DbUsername, DbPassword);
+            conn.setAutoCommit(false);
 
             // First check if username already exists
             String checkUsername = "SELECT accUsername FROM accountdetails WHERE accUsername = ?";
             pst = con.prepareStatement(checkUsername);
             pst.setString(1, username);
-            ResultSet rs = pst.executeQuery();
+            rs = pst.executeQuery();
 
             if (rs.next()) {
                 JOptionPane.showMessageDialog(new JFrame(), "Username already exists. Please choose another username.");
@@ -275,21 +284,76 @@ public class Registration extends javax.swing.JFrame {
                 return;
             }
 
-            // If username doesn't exist, proceed with registration
-            String queryRegister = "INSERT INTO accountdetails(accUsername, accPassword) VALUES (?, ?)";
-            try (java.sql.PreparedStatement pstmt = con.prepareStatement(queryRegister)) {
-                pstmt.setString(1, username);
-                pstmt.setString(2, password);
-                pstmt.executeUpdate();
+            // Insert into accountdetails and get the generated user_id
+            String queryAccount = "INSERT INTO accountdetails(accUsername, accPassword, role) VALUES (?, ?, 1)";
+            pstAccount = conn.prepareStatement(queryAccount, Statement.RETURN_GENERATED_KEYS);
+            pstAccount.setString(1, username);
+            pstAccount.setString(2, password);
+            pstAccount.executeUpdate();
+
+            // Get the generated user_id
+            rs = pstAccount.getGeneratedKeys();
+            int userId = -1;
+            if (rs.next()) {
+                userId = rs.getInt(1);
+            } else {
+                throw new SQLException("Creating user failed, no ID obtained.");
             }
+
+            // Create corresponding customer record with default address
+            String queryCustomer = "INSERT INTO customers(customer_name, email, phone, address, user_id) VALUES (?, ?, ?, ?, ?)";
+            pstCustomer = conn.prepareStatement(queryCustomer);
+            pstCustomer.setString(1, username); // Using username as initial customer name
+            pstCustomer.setString(2, ""); // Empty email initially
+            pstCustomer.setString(3, ""); // Empty phone initially
+            pstCustomer.setString(4, "Address not set"); // Default address
+            pstCustomer.setInt(5, userId);
+            pstCustomer.executeUpdate();
+
+            // Commit transaction
+            conn.commit();
 
             JOptionPane.showMessageDialog(new JFrame(), "Registration Successful");
             txtUsername.setText("");
             txtPassword.setText("");
 
+            // Redirect to login
+            Login login = new Login();
+            login.setVisible(true);
+            login.pack();
+            login.setLocationRelativeTo(null);
+            this.dispose();
+
         } catch (SQLException ex) {
+            // Roll back transaction on error
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException e) {
+                    Logger.getLogger(Registration.class.getName()).log(Level.SEVERE, null, e);
+                }
+            }
             Logger.getLogger(Registration.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(new JFrame(), "Error while adding data: " + ex.getMessage());
+            JOptionPane.showMessageDialog(new JFrame(), "Error during registration: " + ex.getMessage());
+        } finally {
+            // Close all resources
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (pstAccount != null) {
+                    pstAccount.close();
+                }
+                if (pstCustomer != null) {
+                    pstCustomer.close();
+                }
+                if (conn != null) {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                Logger.getLogger(Registration.class.getName()).log(Level.SEVERE, null, e);
+            }
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
