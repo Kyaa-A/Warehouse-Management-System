@@ -184,31 +184,35 @@ public class UserProduct extends javax.swing.JFrame {
                         java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))));
         receipt.append("-------------------------------------------\n");
 
-        // Header with fixed spacing
-        receipt.append(String.format("%-4s %-20s %8s %12s\n",
+        // Fixed-width columns with proper spacing
+        // No: 3 chars, Product: 25 chars, Qty: 5 chars, Price: 12 chars
+        receipt.append(String.format("%-3s %-25s %5s %12s\n",
                 "No.", "Product", "Qty", "Price"));
         receipt.append("-------------------------------------------\n");
 
-        // Add items
+        // Add items with fixed column widths
         for (int i = 0; i < model.getRowCount(); i++) {
             String product = model.getValueAt(i, 1).toString();
             int quantity = (int) model.getValueAt(i, 2);
             double price = (double) model.getValueAt(i, 3);
 
-            // Truncate product name if too long
-            if (product.length() > 20) {
-                product = product.substring(0, 17) + "...";
+            // Truncate and pad product name to exactly 25 characters
+            if (product.length() > 22) {
+                product = product.substring(0, 22) + "...";
+            } else {
+                // Pad with spaces to maintain alignment
+                product = String.format("%-25s", product);
             }
 
-            receipt.append(String.format("%-4d %-20s %8d %,12.2f\n",
+            // Format each line with strict column widths
+            receipt.append(String.format("%-3d %-25s %5d %,12.2f\n",
                     (i + 1), product, quantity, price));
         }
-
         // Receipt footer
         receipt.append("-------------------------------------------\n");
-        receipt.append(String.format("%1s %,12.2f\n", "Total Amount:  ₱", total));
-        receipt.append(String.format("%1s %,12.2f\n", "Cash:               ₱", cash));
-        receipt.append(String.format("%1s %,12.2f\n", "Change:           ₱", balance));
+        receipt.append(String.format("%1s %,12.2f\n", "Total Amount:    ₱", total));
+        receipt.append(String.format("%1s %,12.2f\n", "Cash:                 ₱", cash));
+        receipt.append(String.format("%1s %,12.2f\n", "Change:             ₱", balance));
         receipt.append("===========================================\n");
         receipt.append("          Thank you for shopping!          \n");
         receipt.append("===========================================\n");
@@ -488,11 +492,13 @@ public class UserProduct extends javax.swing.JFrame {
         jLabel25.setForeground(new java.awt.Color(255, 255, 255));
         jLabel25.setText("Balance :");
 
-        jTextField2.setText("jTextField2");
+        jTextField2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
 
-        jLabel3.setText("jLabel3");
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
 
-        jLabel9.setText("jLabel3");
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
