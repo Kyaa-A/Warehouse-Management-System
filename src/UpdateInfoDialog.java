@@ -1,20 +1,143 @@
+
+import javax.swing.*;
+import java.awt.*;
+import java.sql.*;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
  */
-
 /**
  *
  * @author Asnari Pacalna
  */
 public class UpdateInfoDialog extends javax.swing.JDialog {
 
+    private boolean updated = false;
+    private final int userId;
+    private JTextField emailField;
+    private JTextField phoneField;
+    private JTextField addressField;
+
     /**
      * Creates new form UpdateInfoDialog
      */
-    public UpdateInfoDialog(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
-        initComponents();
+    public UpdateInfoDialog(Frame parent, int userId) {
+        super(parent, "Update Information", true);
+        this.userId = userId;
+        initComponents(); // This is the form-generated method
+        setupDialog();
+    }
+
+    private void handleCancel() {
+        int choice = JOptionPane.showConfirmDialog(this,
+                "Do you want to cancel? You need to provide this information to continue.",
+                "Cancel Confirmation",
+                JOptionPane.YES_NO_OPTION);
+
+        if (choice == JOptionPane.YES_OPTION) {
+            updated = false;
+            dispose();
+        }
+    }
+
+    private void setupDialog() {
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+
+        // Setup button actions
+        jButton1.addActionListener(e -> updateInfo()); // Done button
+        jButton2.addActionListener(e -> handleCancel()); // Cancel button
+    }
+
+    private void initializeComponents() {
+        setLayout(new BorderLayout());
+
+        // Main panel with form fields
+        JPanel formPanel = new JPanel(new GridLayout(4, 2, 5, 5));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        formPanel.add(new JLabel("Email:"));
+        emailField = new JTextField(20);
+        formPanel.add(emailField);
+
+        formPanel.add(new JLabel("Phone:"));
+        phoneField = new JTextField(20);
+        formPanel.add(phoneField);
+
+        formPanel.add(new JLabel("Address:"));
+        addressField = new JTextField(20);
+        formPanel.add(addressField);
+
+        // Buttons panel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton updateButton = new JButton("Update");
+        updateButton.addActionListener(e -> updateInfo());
+        buttonPanel.add(updateButton);
+
+        // Add panels to dialog
+        add(new JLabel("Please update your information to continue:", SwingConstants.CENTER), BorderLayout.NORTH);
+        add(formPanel, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        // Set dialog properties
+        setSize(400, 250);
+        setResizable(false);
+        setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+    }
+
+    private void updateInfo() {
+        String email = jTextField1.getText().trim();
+        String phone = jTextField2.getText().trim();
+        String address = jTextField3.getText().trim();
+
+        // Basic validation
+        if (email.isEmpty() || phone.isEmpty() || address.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "All fields are required!",
+                    "Validation Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            // Update both accountdetails and customers tables
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/wms", "root", "");
+
+            // Update email in accountdetails
+            String updateAccountSQL = "UPDATE accountdetails SET email = ? WHERE user_id = ?";
+            PreparedStatement pstAccount = conn.prepareStatement(updateAccountSQL);
+            pstAccount.setString(1, email);
+            pstAccount.setInt(2, userId);
+            pstAccount.executeUpdate();
+
+            // Update phone and address in customers
+            String updateCustomerSQL = "UPDATE customers SET email = ?, phone = ?, address = ? WHERE user_id = ?";
+            PreparedStatement pstCustomer = conn.prepareStatement(updateCustomerSQL);
+            pstCustomer.setString(1, email);
+            pstCustomer.setString(2, phone);
+            pstCustomer.setString(3, address);
+            pstCustomer.setInt(4, userId);
+            pstCustomer.executeUpdate();
+
+            updated = true;
+            JOptionPane.showMessageDialog(this,
+                    "Information updated successfully!",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+            dispose();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Error updating information: " + e.getMessage(),
+                    "Database Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public boolean isUpdated() {
+        return updated;
     }
 
     /**
@@ -177,9 +300,29 @@ public class UpdateInfoDialog extends javax.swing.JDialog {
         //</editor-fold>
 
         /* Create and display the dialog */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(UpdateInfoDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(UpdateInfoDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(UpdateInfoDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(UpdateInfoDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                UpdateInfoDialog dialog = new UpdateInfoDialog(new javax.swing.JFrame(), true);
+                // Using a dummy user ID of 1 for testing purposes
+                UpdateInfoDialog dialog = new UpdateInfoDialog(new javax.swing.JFrame(), 1);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {

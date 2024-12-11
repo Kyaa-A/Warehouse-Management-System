@@ -153,9 +153,9 @@ public class UserHome extends javax.swing.JFrame {
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
         // Home button (Dashboard refresh)
-        Dashboard dashboard = new Dashboard();
-        dashboard.setVisible(true);
-        dashboard.setLocationRelativeTo(null);
+        UserHome userhome = new UserHome();
+        userhome.setVisible(true);
+        userhome.setLocationRelativeTo(null);
         this.dispose();
     }//GEN-LAST:event_jButton11ActionPerformed
 

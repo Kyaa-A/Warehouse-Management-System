@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
-
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -33,6 +32,7 @@ public class UserProduct extends javax.swing.JFrame {
      */
     public UserProduct() {
         initComponents();
+        checkUserInformation();
         jComboBox1.addActionListener(e -> filterProducts());
         jTextField1.getDocument().addDocumentListener(new DocumentListener() {
             public void changedUpdate(DocumentEvent e) {
@@ -48,6 +48,62 @@ public class UserProduct extends javax.swing.JFrame {
             }
         });
         loadProducts("", "All");
+    }
+
+    private int getCurrentUserId() {
+        // This should return the ID of the currently logged-in user
+        // You might want to pass this through the constructor or store it in a static variable
+        return 0; // Replace with actual implementation
+    }
+
+    private void checkUserInformation() {
+        // Get current user's ID (you'll need to pass this from the login)
+        // For testing, let's assume we can get it from somewhere
+        int currentUserId = getCurrentUserId(); // You need to implement this method
+
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/wms", "root", "");
+            String checkSQL = "SELECT c.email, c.phone, c.address FROM customers c "
+                    + "WHERE c.user_id = ?";
+
+            PreparedStatement pst = conn.prepareStatement(checkSQL);
+            pst.setInt(1, currentUserId);
+
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                String email = rs.getString("email");
+                String phone = rs.getString("phone");
+                String address = rs.getString("address");
+
+                // Check if any required information is missing
+                if (email == null || email.trim().isEmpty()
+                        || phone == null || phone.trim().isEmpty()
+                        || address == null || address.trim().isEmpty()
+                        || address.equals("Address not set")) {
+
+                    UpdateInfoDialog dialog = new UpdateInfoDialog(this, currentUserId);
+                    dialog.setVisible(true);
+
+                    // If user didn't update their information, return to previous screen
+                    if (!dialog.isUpdated()) {
+                        dispose();
+                        new UserHome().setVisible(true);
+                    }
+                }
+            }
+
+            rs.close();
+            pst.close();
+            conn.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Error checking user information: " + e.getMessage(),
+                    "Database Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void filterProducts() {
@@ -739,9 +795,9 @@ public class UserProduct extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        Products products = new Products();
-        products.setVisible(true);
-        products.setLocationRelativeTo(null);
+        UserProduct userproduct = new UserProduct();
+        userproduct.setVisible(true);
+        userproduct.setLocationRelativeTo(null);
         this.dispose(); // Close current Dashboard window
     }//GEN-LAST:event_jButton8ActionPerformed
 
