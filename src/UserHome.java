@@ -5,17 +5,19 @@ import javax.swing.JOptionPane;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
 /**
  *
  * @author Asnari Pacalna
  */
 public class UserHome extends javax.swing.JFrame {
 
+    private String loggedInUsername;
+
     /**
      * Creates new form UserHome
      */
-    public UserHome() {
+    public UserHome(String username) {
+        this.loggedInUsername = username;
         initComponents();
     }
 
@@ -153,14 +155,14 @@ public class UserHome extends javax.swing.JFrame {
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
         // Home button (Dashboard refresh)
-        UserHome userhome = new UserHome();
+        UserHome userhome = new UserHome(loggedInUsername);
         userhome.setVisible(true);
         userhome.setLocationRelativeTo(null);
         this.dispose();
     }//GEN-LAST:event_jButton11ActionPerformed
 
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
-        UserProduct userproduct = new UserProduct();
+        UserProduct userproduct = new UserProduct(loggedInUsername);
         userproduct.setVisible(true);
         userproduct.setLocationRelativeTo(null);
         this.dispose(); // Close current Dashboard window
@@ -168,7 +170,7 @@ public class UserHome extends javax.swing.JFrame {
 
     private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
         // Packing button
-        UserSettings usersettings = new UserSettings();
+        UserSettings usersettings = new UserSettings(loggedInUsername);
         usersettings.setVisible(true);
         usersettings.setLocationRelativeTo(null);
         this.dispose();
@@ -176,10 +178,10 @@ public class UserHome extends javax.swing.JFrame {
 
     private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton15ActionPerformed
         int choice = JOptionPane.showConfirmDialog(this,
-            "Are you sure you want to logout?",
-            "Logout Confirmation",
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.QUESTION_MESSAGE);
+                "Are you sure you want to logout?",
+                "Logout Confirmation",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE);
 
         if (choice == JOptionPane.YES_OPTION) {
             // Return to login screen
@@ -217,11 +219,23 @@ public class UserHome extends javax.swing.JFrame {
         }
         //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new UserHome().setVisible(true);
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
             }
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(UserHome.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(() -> {
+            // Redirect to login instead of creating UserSettings without username
+            Login login = new Login();
+            login.setVisible(true);
+            login.setLocationRelativeTo(null);
         });
     }
 

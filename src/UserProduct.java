@@ -26,12 +26,16 @@ import javax.swing.table.DefaultTableModel;
 public class UserProduct extends javax.swing.JFrame {
 
     private javax.swing.JComboBox<String> categoryComboBox;
+    private String loggedInUsername;
+    private Connection connection;
 
     /**
      * Creates new form UserProduct
      */
-    public UserProduct() {
+    public UserProduct(String username) {
+        this.loggedInUsername = username;
         initComponents();
+        initializeDatabaseConnection();
         checkUserInformation();
         jComboBox1.addActionListener(e -> filterProducts());
         jTextField1.getDocument().addDocumentListener(new DocumentListener() {
@@ -50,23 +54,51 @@ public class UserProduct extends javax.swing.JFrame {
         loadProducts("", "All");
     }
 
+    private void initializeDatabaseConnection() {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/wms", "root", "");
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Error connecting to database: " + e.getMessage(),
+                    "Database Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private int getCurrentUserId() {
-        // This should return the ID of the currently logged-in user
-        // You might want to pass this through the constructor or store it in a static variable
-        return 0; // Replace with actual implementation
+        int userId = -1;
+        try {
+            String query = "SELECT user_id FROM accountdetails WHERE accUsername = ?";
+            PreparedStatement pst = connection.prepareStatement(query);
+            pst.setString(1, loggedInUsername);
+
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                userId = rs.getInt("user_id");
+            }
+
+            rs.close();
+            pst.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Error retrieving user ID: " + e.getMessage(),
+                    "Database Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+        return userId;
     }
 
     private void checkUserInformation() {
-        // Get current user's ID (you'll need to pass this from the login)
-        // For testing, let's assume we can get it from somewhere
-        int currentUserId = getCurrentUserId(); // You need to implement this method
+        int currentUserId = getCurrentUserId();
 
         try {
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/wms", "root", "");
             String checkSQL = "SELECT c.email, c.phone, c.address FROM customers c "
                     + "WHERE c.user_id = ?";
 
-            PreparedStatement pst = conn.prepareStatement(checkSQL);
+            PreparedStatement pst = connection.prepareStatement(checkSQL);
             pst.setInt(1, currentUserId);
 
             ResultSet rs = pst.executeQuery();
@@ -76,7 +108,6 @@ public class UserProduct extends javax.swing.JFrame {
                 String phone = rs.getString("phone");
                 String address = rs.getString("address");
 
-                // Check if any required information is missing
                 if (email == null || email.trim().isEmpty()
                         || phone == null || phone.trim().isEmpty()
                         || address == null || address.trim().isEmpty()
@@ -85,17 +116,15 @@ public class UserProduct extends javax.swing.JFrame {
                     UpdateInfoDialog dialog = new UpdateInfoDialog(this, currentUserId);
                     dialog.setVisible(true);
 
-                    // If user didn't update their information, return to previous screen
                     if (!dialog.isUpdated()) {
                         dispose();
-                        new UserHome().setVisible(true);
+                        new UserHome(loggedInUsername).setVisible(true);
                     }
                 }
             }
 
             rs.close();
             pst.close();
-            conn.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -116,9 +145,9 @@ public class UserProduct extends javax.swing.JFrame {
 
     private void loadProducts(String searchText, String category) {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/wms", "root", "");
-            StringBuilder queryBuilder = new StringBuilder("SELECT product_id, product_name, price, stock, category, image_data FROM products WHERE active = 1");
+            StringBuilder queryBuilder = new StringBuilder(
+                    "SELECT product_id, product_name, price, stock, category, image_data "
+                    + "FROM products WHERE active = 1");
             List<String> conditions = new ArrayList<>();
             List<Object> parameters = new ArrayList<>();
 
@@ -134,7 +163,7 @@ public class UserProduct extends javax.swing.JFrame {
                 queryBuilder.append(" AND ").append(String.join(" AND ", conditions));
             }
 
-            PreparedStatement pst = conn.prepareStatement(queryBuilder.toString());
+            PreparedStatement pst = connection.prepareStatement(queryBuilder.toString());
             for (int i = 0; i < parameters.size(); i++) {
                 pst.setObject(i + 1, parameters.get(i));
             }
@@ -158,12 +187,23 @@ public class UserProduct extends javax.swing.JFrame {
             jPanel5.repaint();
             rs.close();
             pst.close();
-            conn.close();
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error loading products: " + e.getMessage());
         }
     }
+    
+    @Override
+public void dispose() {
+    try {
+        if (connection != null && !connection.isClosed()) {
+            connection.close();
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    super.dispose();
+}
 // Helper method to create product panels
 
     private JPanel createProductPanel(int id, String name, double price, int stock, byte[] imageData) {
@@ -788,22 +828,22 @@ public class UserProduct extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // Home button (Dashboard refresh)
-        UserHome userhome = new UserHome();
+        UserHome userhome = new UserHome(loggedInUsername);
         userhome.setVisible(true);
         userhome.setLocationRelativeTo(null);
         this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        UserProduct userproduct = new UserProduct();
-        userproduct.setVisible(true);
-        userproduct.setLocationRelativeTo(null);
-        this.dispose(); // Close current Dashboard window
+        UserSettings usersettings = new UserSettings(loggedInUsername);
+        usersettings.setVisible(true);
+        usersettings.setLocationRelativeTo(null);
+        this.dispose();
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // Packing button
-        UserSettings usersettings = new UserSettings();
+        UserSettings usersettings = new UserSettings(loggedInUsername);
         usersettings.setVisible(true);
         usersettings.setLocationRelativeTo(null);
         this.dispose();
@@ -966,11 +1006,21 @@ public class UserProduct extends javax.swing.JFrame {
         }
         //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new UserProduct().setVisible(true);
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
             }
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(UserProduct.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+
+        java.awt.EventQueue.invokeLater(() -> {
+            Login login = new Login();
+            login.setVisible(true);
+            login.setLocationRelativeTo(null);
         });
     }
 

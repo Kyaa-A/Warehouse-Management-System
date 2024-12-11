@@ -258,40 +258,32 @@ public class Login extends javax.swing.JFrame {
         String username = txtLogUsername.getText();
         String password = txtLogPassword.getText();
 
-        // Corrected query with placeholders for parameterized query
         String queryLogin = "SELECT * FROM accountdetails WHERE accUsername = ? AND accPassword = ?";
 
         try {
-            // Prepare the statement and set parameters
             pst = con.prepareStatement(queryLogin);
-            pst.setString(1, username); // Set the username parameter
-            pst.setString(2, password); // Set the password parameter
+            pst.setString(1, username);
+            pst.setString(2, password);
 
-            // Execute the query
             ResultSet rs = pst.executeQuery();
 
             if (!rs.next()) {
                 JOptionPane.showMessageDialog(null, "Invalid Credentials");
             } else {
-                // Get the user's role from the result set
                 int userRole = rs.getInt("role");
                 JOptionPane.showMessageDialog(null, "Login Successful");
 
-                // Redirect based on role
                 if (userRole == 1) {
-                    // Regular user - redirect to Dashboard
-                    UserHome userhome = new UserHome();
+                    // Pass username to UserHome
+                    UserHome userhome = new UserHome(username);  // Modified this line
                     userhome.setVisible(true);
                     userhome.setLocationRelativeTo(null);
                 } else if (userRole == 2) {
-                    // Admin - redirect to Admin panel
-
                     Dashboard dashboard = new Dashboard();
                     dashboard.setVisible(true);
                     dashboard.setLocationRelativeTo(null);
                 }
 
-                // Close the login window
                 this.dispose();
             }
         } catch (SQLException ex) {
