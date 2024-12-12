@@ -228,69 +228,90 @@ public class UserHome extends javax.swing.JFrame {
         jScrollPane1.setBorder(BorderFactory.createLineBorder(new Color(100, 100, 100), 1)); // Darker border
     }
 
-    private void loadNotifications() {
-        try {
-            String customerQuery = "SELECT c.customer_id FROM customers c "
-                    + "JOIN accountdetails a ON c.user_id = a.user_id "
-                    + "WHERE a.accUsername = ?";
+  private void loadNotifications() {
+    try {
+        String customerQuery = "SELECT c.customer_id FROM customers c " +
+                             "JOIN accountdetails a ON c.user_id = a.user_id " +
+                             "WHERE a.accUsername = ?";
+        
+        PreparedStatement pst = connection.prepareStatement(customerQuery);
+        pst.setString(1, loggedInUsername);
+        ResultSet rs = pst.executeQuery();
+        
+        if (rs.next()) {
+            int customerId = rs.getInt("customer_id");
+            
+            // Modified to use orders table
+            String orderQuery = "SELECT o.order_id, o.status, o.last_updated, " +
+                              "GROUP_CONCAT(CONCAT(p.product_name, ' (', oi.quantity, ')') SEPARATOR ', ') as products " +
+                              "FROM orders o " +
+                              "JOIN order_items oi ON o.order_id = oi.order_id " +
+                              "JOIN products p ON oi.product_id = p.product_id " +
+                              "WHERE o.customer_id = ? AND " +
+                              "o.status IN ('VERIFIED', 'PACKED', 'SHIPPED', 'DELIVERED') " +
+                              "GROUP BY o.order_id, o.status, o.last_updated " +
+                              "ORDER BY o.last_updated DESC";
 
-            PreparedStatement pst = connection.prepareStatement(customerQuery);
-            pst.setString(1, loggedInUsername);
-            ResultSet rs = pst.executeQuery();
+            PreparedStatement orderPst = connection.prepareStatement(orderQuery);
+            orderPst.setInt(1, customerId);
+            ResultSet orderRs = orderPst.executeQuery();
 
-            if (rs.next()) {
-                int customerId = rs.getInt("customer_id");
-
-                String orderQuery = "SELECT o.order_id, o.status, o.last_updated, "
-                        + "GROUP_CONCAT(CONCAT(p.product_name, ' (', oi.quantity, ')') SEPARATOR ', ') as products "
-                        + "FROM orders o "
-                        + "JOIN order_items oi ON o.order_id = oi.order_id "
-                        + "JOIN products p ON oi.product_id = p.product_id "
-                        + "WHERE o.customer_id = ? AND o.status = 'VERIFIED' "
-                        + "GROUP BY o.order_id "
-                        + "ORDER BY o.last_updated DESC";
-
-                PreparedStatement orderPst = connection.prepareStatement(orderQuery);
-                orderPst.setInt(1, customerId);
-                ResultSet orderRs = orderPst.executeQuery();
-
-                StringBuilder notifications = new StringBuilder();
-
-                while (orderRs.next()) {
-                    String products = orderRs.getString("products");
-                    Timestamp timestamp = orderRs.getTimestamp("last_updated");
-
-                    notifications.append("Your Order has been approved!\n");
-                    notifications.append("Products: ").append(products).append("\n");
-                    notifications.append("Date: ").append(timestamp).append("\n");
-                    notifications.append("----------------------------------------\n");
+            StringBuilder notifications = new StringBuilder();
+            
+            while (orderRs.next()) {
+                String products = orderRs.getString("products");
+                Timestamp timestamp = orderRs.getTimestamp("last_updated");
+                String status = orderRs.getString("status");
+                
+                String message;
+                switch(status) {
+                    case "VERIFIED":
+                        message = "Your Order has been approved!";
+                        break;
+                    case "PACKED":
+                        message = "Your Order has been packed and ready for shipping!";
+                        break;
+                    case "SHIPPED":
+                        message = "Your Order is on the way!";
+                        break;
+                    case "DELIVERED":
+                        message = "Your Order has been delivered!";
+                        break;
+                    default:
+                        message = "Your Order status has been updated!";
                 }
-
-                // Update the notification area
-                Component view = jScrollPane1.getViewport().getView();
-                if (view instanceof JTextPane) {
-                    JTextPane textPane = (JTextPane) view;
-                    textPane.setText(notifications.toString());
-
-                    // Ensure center alignment is maintained
-                    StyledDocument doc = textPane.getStyledDocument();
-                    SimpleAttributeSet center = new SimpleAttributeSet();
-                    StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-                    doc.setParagraphAttributes(0, doc.getLength(), center, false);
-                }
-
-                orderRs.close();
-                orderPst.close();
+                
+                notifications.append(message).append("\n");
+                notifications.append("Products: ").append(products).append("\n");
+                notifications.append("Date: ").append(timestamp).append("\n");
+                notifications.append("-------------------------------------------------\n");
             }
 
-            rs.close();
-            pst.close();
+            // Update the notification area
+            Component view = jScrollPane1.getViewport().getView();
+            if (view instanceof JTextPane) {
+                JTextPane textPane = (JTextPane) view;
+                textPane.setText(notifications.toString());
+                
+                // Ensure center alignment is maintained
+                StyledDocument doc = textPane.getStyledDocument();
+                SimpleAttributeSet center = new SimpleAttributeSet();
+                StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+                doc.setParagraphAttributes(0, doc.getLength(), center, false);
+            }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error loading notifications: " + e.getMessage());
+            orderRs.close();
+            orderPst.close();
         }
+        
+        rs.close();
+        pst.close();
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error loading notifications: " + e.getMessage());
     }
+}
 
     private JPanel createNotificationPanel(String orderId, String products, Timestamp timestamp) {
         JPanel panel = new JPanel();
