@@ -1,5 +1,14 @@
 
 import javax.swing.JOptionPane;
+import java.sql.*;
+import javax.swing.*;
+import java.awt.*;
+import javax.swing.text.StyledDocument;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.JTextPane;
+import javax.swing.text.DefaultStyledDocument;
+import java.awt.Insets;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -11,7 +20,13 @@ import javax.swing.JOptionPane;
  */
 public class UserHome extends javax.swing.JFrame {
 
+    private Connection connection;
     private String loggedInUsername;
+
+    private void startNotificationTimer() {
+        Timer timer = new Timer(30000, (e) -> refreshNotifications()); // Check every 30 seconds
+        timer.start();
+    }
 
     /**
      * Creates new form UserHome
@@ -19,6 +34,10 @@ public class UserHome extends javax.swing.JFrame {
     public UserHome(String username) {
         this.loggedInUsername = username;
         initComponents();
+        initializeDatabaseConnection();
+        setupNotificationPanel();
+        loadNotifications();
+        startNotificationTimer();
     }
 
     /**
@@ -37,10 +56,9 @@ public class UserHome extends javax.swing.JFrame {
         jButton14 = new javax.swing.JButton();
         jButton15 = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
-        jPanel6 = new javax.swing.JPanel();
-        jPanel7 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextField3 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setSize(new java.awt.Dimension(1098, 705));
@@ -128,71 +146,40 @@ public class UserHome extends javax.swing.JFrame {
 
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
 
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 308, Short.MAX_VALUE)
-        );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 585, Short.MAX_VALUE)
-        );
-
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 472, Short.MAX_VALUE)
-        );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 294, Short.MAX_VALUE)
-        );
-
-        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
-        jPanel7.setLayout(jPanel7Layout);
-        jPanel7Layout.setHorizontalGroup(
-            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        jPanel7Layout.setVerticalGroup(
-            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 311, Short.MAX_VALUE)
-        );
-
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel1.setText("Notifications");
+
+        jTextField3.setText("Your Order \"Product Name\" has been approved");
+        jTextField3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jTextField3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField3ActionPerformed(evt);
+            }
+        });
+        jScrollPane1.setViewportView(jTextField3);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addContainerGap(30, Short.MAX_VALUE)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(27, 27, 27)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap(599, Short.MAX_VALUE)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(27, 27, 27))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(60, 60, 60))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(34, 34, 34))))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(27, 27, 27)
-                        .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(38, 38, 38))
+                .addGap(45, 45, 45)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 578, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -212,6 +199,162 @@ public class UserHome extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void initializeDatabaseConnection() {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/wms", "root", "");
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Database connection error: " + e.getMessage());
+        }
+    }
+
+    private void setupNotificationPanel() {
+        // Create a text pane for better text handling
+        JTextPane textPane = new JTextPane();
+        textPane.setEditable(false);
+        textPane.setMargin(new Insets(0, 0, 0, 0));  // Remove margins
+
+        // Center align the text
+        StyledDocument doc = textPane.getStyledDocument();
+        SimpleAttributeSet center = new SimpleAttributeSet();
+        StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+        textPane.setParagraphAttributes(center, false);
+
+        // Replace the text field with the text pane and add darker border
+        jScrollPane1.setViewportView(textPane);
+        jScrollPane1.setViewportBorder(null);
+        jScrollPane1.setBorder(BorderFactory.createLineBorder(new Color(100, 100, 100), 1)); // Darker border
+    }
+
+    private void loadNotifications() {
+        try {
+            String customerQuery = "SELECT c.customer_id FROM customers c "
+                    + "JOIN accountdetails a ON c.user_id = a.user_id "
+                    + "WHERE a.accUsername = ?";
+
+            PreparedStatement pst = connection.prepareStatement(customerQuery);
+            pst.setString(1, loggedInUsername);
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                int customerId = rs.getInt("customer_id");
+
+                String orderQuery = "SELECT o.order_id, o.status, o.last_updated, "
+                        + "GROUP_CONCAT(CONCAT(p.product_name, ' (', oi.quantity, ')') SEPARATOR ', ') as products "
+                        + "FROM orders o "
+                        + "JOIN order_items oi ON o.order_id = oi.order_id "
+                        + "JOIN products p ON oi.product_id = p.product_id "
+                        + "WHERE o.customer_id = ? AND o.status = 'VERIFIED' "
+                        + "GROUP BY o.order_id "
+                        + "ORDER BY o.last_updated DESC";
+
+                PreparedStatement orderPst = connection.prepareStatement(orderQuery);
+                orderPst.setInt(1, customerId);
+                ResultSet orderRs = orderPst.executeQuery();
+
+                StringBuilder notifications = new StringBuilder();
+
+                while (orderRs.next()) {
+                    String products = orderRs.getString("products");
+                    Timestamp timestamp = orderRs.getTimestamp("last_updated");
+
+                    notifications.append("Your Order has been approved!\n");
+                    notifications.append("Products: ").append(products).append("\n");
+                    notifications.append("Date: ").append(timestamp).append("\n");
+                    notifications.append("----------------------------------------\n");
+                }
+
+                // Update the notification area
+                Component view = jScrollPane1.getViewport().getView();
+                if (view instanceof JTextPane) {
+                    JTextPane textPane = (JTextPane) view;
+                    textPane.setText(notifications.toString());
+
+                    // Ensure center alignment is maintained
+                    StyledDocument doc = textPane.getStyledDocument();
+                    SimpleAttributeSet center = new SimpleAttributeSet();
+                    StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+                    doc.setParagraphAttributes(0, doc.getLength(), center, false);
+                }
+
+                orderRs.close();
+                orderPst.close();
+            }
+
+            rs.close();
+            pst.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error loading notifications: " + e.getMessage());
+        }
+    }
+
+    private JPanel createNotificationPanel(String orderId, String products, Timestamp timestamp) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout(10, 5));
+        panel.setBackground(new Color(245, 245, 245));
+        panel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
+
+        // Order ID and timestamp panel
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setBackground(panel.getBackground());
+
+        JLabel orderLabel = new JLabel("Order " + orderId + " verified!");
+        orderLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        orderLabel.setForeground(new Color(179, 1, 104));  // Match your theme color
+
+        JLabel timeLabel = new JLabel(timestamp.toString());
+        timeLabel.setFont(new Font("Segoe UI", Font.ITALIC, 11));
+        timeLabel.setForeground(Color.GRAY);
+
+        headerPanel.add(orderLabel, BorderLayout.WEST);
+        headerPanel.add(timeLabel, BorderLayout.EAST);
+
+        // Products panel
+        JTextArea productsArea = new JTextArea("Items: " + products);
+        productsArea.setEditable(false);
+        productsArea.setLineWrap(true);
+        productsArea.setWrapStyleWord(true);
+        productsArea.setBackground(panel.getBackground());
+        productsArea.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        productsArea.setBorder(null);
+
+        panel.add(headerPanel, BorderLayout.NORTH);
+        panel.add(productsArea, BorderLayout.CENTER);
+
+        // Set size constraints
+        panel.setMaximumSize(new Dimension(290, 100));
+        panel.setPreferredSize(new Dimension(290, 100));
+
+        return panel;
+    }
+
+    public void refreshNotifications() {
+        loadNotifications();
+    }
+
+    public void windowActivated(java.awt.event.WindowEvent evt) {
+        refreshNotifications();
+    }
+
+    // Don't forget to close the connection when the form is closed
+    @Override
+    public void dispose() {
+        try {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        super.dispose();
+    }
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
         // Home button (Dashboard refresh)
@@ -251,6 +394,10 @@ public class UserHome extends javax.swing.JFrame {
             this.dispose(); // Close the dashboard
         }        // TODO add your handling code here:
     }//GEN-LAST:event_jButton15ActionPerformed
+
+    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -308,8 +455,7 @@ public class UserHome extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextField jTextField3;
     // End of variables declaration//GEN-END:variables
 }
