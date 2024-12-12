@@ -270,7 +270,7 @@ public class Dashboard extends javax.swing.JFrame {
         jLabel4.setText("Pending Verification");
 
         PendingVerification.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
-        PendingVerification.setText("0");
+        PendingVerification.setText("00");
 
         jLabel9.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asnari Pacalna\\Documents\\NetBeansProjects\\WarehouseSystem\\src\\Icons\\pending.png")); // NOI18N
 
@@ -285,9 +285,10 @@ public class Dashboard extends javax.swing.JFrame {
                         .addComponent(jLabel4))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(62, 62, 62)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(PendingVerification, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel9))))
+                        .addComponent(jLabel9))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(53, 53, 53)
+                        .addComponent(PendingVerification)))
                 .addContainerGap(15, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
