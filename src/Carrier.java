@@ -614,7 +614,7 @@ public class Carrier extends javax.swing.JFrame {
                 "ID", "Name", "Contact Info", "Service Level", "Average Work", "Delivery Time", "Status"
             }
         ));
-        jTable1.setRowHeight(40);
+        jTable1.setRowHeight(100);
         jScrollPane1.setViewportView(jTable1);
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N

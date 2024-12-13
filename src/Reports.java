@@ -335,6 +335,7 @@ public class Reports extends javax.swing.JFrame {
                 "ID", "Username", "Password", "Role"
             }
         ));
+        jTable1.setRowHeight(30);
         jScrollPane1.setViewportView(jTable1);
 
         jButton7.setBackground(new java.awt.Color(179, 1, 104));
