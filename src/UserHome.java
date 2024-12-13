@@ -32,7 +32,8 @@ public class UserHome extends javax.swing.JFrame {
         initializeDatabaseConnection();
         setupNotificationPanel();
         loadNotifications();
-        updateOrderStatistics(); // Add this line
+        updateOrderStatistics();
+        loadOrderList(); // Add this line
         startNotificationTimer();
     }
 
@@ -68,6 +69,14 @@ public class UserHome extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         TotalOrder = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jPanel2 = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        Image = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setSize(new java.awt.Dimension(1098, 705));
@@ -278,17 +287,79 @@ public class UserHome extends javax.swing.JFrame {
                 .addContainerGap(25, Short.MAX_VALUE))
         );
 
+        Image.setText("Image");
+
+        jLabel2.setText("Product Name");
+
+        jLabel7.setText("Qty");
+
+        jLabel10.setText("Label");
+
+        jLabel12.setText("Price");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(Image, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(Image, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel10))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(jLabel12))
+                .addGap(25, 25, 25))
+        );
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 377, Short.MAX_VALUE))
+        );
+
+        jScrollPane2.setViewportView(jPanel2);
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap(32, Short.MAX_VALUE)
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(31, 31, 31)
-                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
-                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(31, 31, 31)
+                        .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(30, 30, 30)
+                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane2))
                 .addGap(23, 23, 23)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
@@ -303,19 +374,20 @@ public class UserHome extends javax.swing.JFrame {
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(45, 45, 45)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(45, 45, 45)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 578, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(64, 64, 64)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                 .addComponent(jPanel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
-                                .addComponent(jPanel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addComponent(jPanel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 578, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -541,6 +613,131 @@ private void startNotificationTimer() {
         }
     }
 
+    private void loadOrderList() {
+        try {
+            refreshDatabaseConnection();
+
+            // Get customer ID
+            String customerQuery = "SELECT c.customer_id FROM customers c "
+                    + "JOIN accountdetails a ON c.user_id = a.user_id "
+                    + "WHERE a.accUsername = ?";
+
+            PreparedStatement pst = connection.prepareStatement(customerQuery);
+            pst.setString(1, loggedInUsername);
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                int customerId = rs.getInt("customer_id");
+
+                // Query to get all orders with their items
+                String orderQuery = "SELECT o.order_id, o.status, o.order_date, o.last_updated, "
+                        + "GROUP_CONCAT(CONCAT(p.product_name, ' (', oi.quantity, ')') SEPARATOR ', ') as products, "
+                        + "GROUP_CONCAT(p.image_data) as images, "
+                        + "SUM(p.price * oi.quantity) as total_price "
+                        + "FROM orders o "
+                        + "JOIN order_items oi ON o.order_id = oi.order_id "
+                        + "JOIN products p ON oi.product_id = p.product_id "
+                        + "WHERE o.customer_id = ? "
+                        + "GROUP BY o.order_id, o.status, o.order_date, o.last_updated "
+                        + "ORDER BY o.last_updated DESC";
+
+                PreparedStatement orderPst = connection.prepareStatement(orderQuery);
+                orderPst.setInt(1, customerId);
+                ResultSet orderRs = orderPst.executeQuery();
+
+                // Create a panel to hold all order items
+                JPanel mainPanel = new JPanel();
+                mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+                mainPanel.setBackground(Color.WHITE);
+
+                while (orderRs.next()) {
+                    String orderId = orderRs.getString("order_id");
+                    String status = orderRs.getString("status");
+                    String products = orderRs.getString("products");
+                    Timestamp orderDate = orderRs.getTimestamp("order_date");
+                    double totalPrice = orderRs.getDouble("total_price");
+                    byte[] imageData = null;
+
+                    // Create a panel for each order
+                    JPanel orderPanel = new JPanel();
+                    orderPanel.setLayout(new BorderLayout(10, 10));
+                    orderPanel.setBorder(BorderFactory.createCompoundBorder(
+                            BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(200, 200, 200)),
+                            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+                    ));
+                    orderPanel.setBackground(Color.WHITE);
+
+                    // Create header panel with order ID and status
+                    JPanel headerPanel = new JPanel(new BorderLayout());
+                    headerPanel.setBackground(Color.WHITE);
+
+                    JLabel orderIdLabel = new JLabel("Order ID: " + orderId);
+                    orderIdLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+
+                    JLabel statusLabel = new JLabel(status);
+                    statusLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+                    statusLabel.setForeground(getStatusColor(status));
+
+                    headerPanel.add(orderIdLabel, BorderLayout.WEST);
+                    headerPanel.add(statusLabel, BorderLayout.EAST);
+
+                    // Create content panel
+                    JPanel contentPanel = new JPanel(new GridLayout(3, 1, 5, 5));
+                    contentPanel.setBackground(Color.WHITE);
+
+                    JLabel productsLabel = new JLabel("Products: " + products);
+                    JLabel dateLabel = new JLabel("Order Date: " + orderDate.toString());
+                    JLabel priceLabel = new JLabel(String.format("Total Price: ₱%.2f", totalPrice));
+
+                    contentPanel.add(productsLabel);
+                    contentPanel.add(dateLabel);
+                    contentPanel.add(priceLabel);
+
+                    // Add components to order panel
+                    orderPanel.add(headerPanel, BorderLayout.NORTH);
+                    orderPanel.add(contentPanel, BorderLayout.CENTER);
+
+                    // Add order panel to main panel
+                    mainPanel.add(orderPanel);
+                    mainPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Add spacing
+                }
+
+                // Set the main panel as the viewport view
+                jScrollPane2.setViewportView(mainPanel);
+
+                orderRs.close();
+                orderPst.close();
+            }
+
+            rs.close();
+            pst.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Error loading orders: " + e.getMessage(),
+                    "Database Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private Color getStatusColor(String status) {
+        switch (status) {
+            case "PENDING":
+                return new Color(255, 165, 0); // Orange
+            case "VERIFIED":
+                return new Color(0, 128, 0);  // Green
+            case "PACKED":
+                return new Color(0, 0, 255);    // Blue
+            case "SHIPPED":
+                return new Color(128, 0, 128); // Purple
+            case "DELIVERED":
+                return new Color(0, 128, 0); // Green
+            default:
+                return Color.BLACK;
+        }
+    }
+
     private JPanel createNotificationPanel(String orderId, String products, Timestamp timestamp) {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout(10, 5));
@@ -589,6 +786,7 @@ private void startNotificationTimer() {
             refreshDatabaseConnection();
             loadNotifications();
             updateOrderStatistics();
+            loadOrderList(); // Add this line
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this,
@@ -736,6 +934,7 @@ private void startNotificationTimer() {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel Image;
     private javax.swing.JLabel PendingVerification;
     private javax.swing.JLabel ReadyToShip;
     private javax.swing.JLabel TotalOrder;
@@ -744,20 +943,27 @@ private void startNotificationTimer() {
     private javax.swing.JButton jButton14;
     private javax.swing.JButton jButton15;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField jTextField3;
     // End of variables declaration//GEN-END:variables
 }

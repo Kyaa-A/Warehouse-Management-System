@@ -1,0 +1,625 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Dec 13, 2024 at 02:22 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `wms`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `accountdetails`
+--
+
+CREATE TABLE `accountdetails` (
+  `user_id` int(11) NOT NULL,
+  `accUsername` varchar(251) NOT NULL,
+  `accPassword` varchar(251) NOT NULL,
+  `role` int(11) NOT NULL DEFAULT 1,
+  `email` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `accountdetails`
+--
+
+INSERT INTO `accountdetails` (`user_id`, `accUsername`, `accPassword`, `role`, `email`, `created_at`) VALUES
+(1, 'Admin', '123', 2, 'admin@warehouse.com', '2024-12-03 17:00:00'),
+(2, 'Kyaa', '123', 1, 'kyaa@warehouse.com', '2024-12-03 17:00:00'),
+(6, 'merlin', '123', 1, NULL, '2024-12-11 06:05:33'),
+(8, 'merllak', '45', 1, 'merlak@gmail.com', '2024-12-11 08:21:42'),
+(9, 'hehe', '123', 1, 'hehe@gmail.com', '2024-12-11 08:36:06'),
+(10, 'Brandon', '123', 1, 'brandon@gmail.com', '2024-12-11 09:06:28'),
+(11, 'Labu', '123', 1, 'labulabu@gmail.com', '2024-12-12 14:47:11'),
+(12, 'Zenitsu', '123', 1, 'zenitsu@gmail.com', '2024-12-12 14:50:50');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `carriers`
+--
+
+CREATE TABLE `carriers` (
+  `carrier_id` int(11) NOT NULL,
+  `carrier_name` varchar(255) NOT NULL,
+  `contact_info` text DEFAULT NULL,
+  `service_level` enum('EXPRESS','STANDARD','ECONOMY') NOT NULL,
+  `average_work_time` varchar(20) DEFAULT '24-48 hours',
+  `delivery_time` varchar(20) DEFAULT '3-5 days',
+  `active` tinyint(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `carriers`
+--
+
+INSERT INTO `carriers` (`carrier_id`, `carrier_name`, `contact_info`, `service_level`, `average_work_time`, `delivery_time`, `active`) VALUES
+(1, 'J&T Express', 'contact@jtexpress.ph', 'EXPRESS', '12-24 hours', '1-2 days', 1),
+(2, 'LBC Express', 'info@lbcexpress.com', 'EXPRESS', '12-24 hours', '1-2 days', 1),
+(3, 'Ninja Van', 'support@ninjavan.ph', 'STANDARD', '24-48 hours', '3-5 days', 1),
+(4, '2GO', 'info@2go.com.ph', 'STANDARD', '24-48 hours', '3-5 days', 1),
+(5, 'Budget Carriers', 'support@budget.com', 'ECONOMY', '48-72 hours', '5-7 days', 0),
+(6, 'Premium Delivery', 'help@premium.com', 'EXPRESS', '12-24 hours', '1-2 days', 1),
+(7, 'Quick Ship Co.', 'service@quickship.com', 'EXPRESS', '12-24 hours', '1-2 days', 1),
+(8, 'Safe Cargo Ltd.', 'info@safecargo.com', 'STANDARD', '24-48 hours', '3-5 days', 0),
+(9, 'Economy Express', 'contact@economyexpress.com', 'ECONOMY', '48-72 hours', '5-7 days', 1),
+(10, 'Global Logistics', 'support@global.com', 'STANDARD', '24-48 hours', '3-5 days', 1),
+(11, 'Rapid Transit', 'info@rapid.com', 'EXPRESS', '12-24 hours', '1-2 days', 0),
+(12, 'Value Shipping', 'contact@value.com', 'ECONOMY', '48-72 hours', '5-7 days', 1),
+(13, 'FastTrack Logistics', 'contact@fasttrack.com', 'EXPRESS', '12-24 hours', '1-2 days', 0),
+(14, 'EconoShip', 'support@econoship.com', 'ECONOMY', '48-72 hours', '5-7 days', 1),
+(15, 'ReliableFreight', 'info@reliablefreight.com', 'STANDARD', '24-48 hours', '3-5 days', 1),
+(16, 'SpeedyDelivery', 'customercare@speedydelivery.com', 'EXPRESS', '12-24 hours', '1-2 days', 1),
+(17, 'BudgetCarriers', 'service@budgetcarriers.com', 'ECONOMY', '48-72 hours', '5-7 days', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `customers`
+--
+
+CREATE TABLE `customers` (
+  `customer_id` int(11) NOT NULL,
+  `customer_name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `address` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `user_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `customers`
+--
+
+INSERT INTO `customers` (`customer_id`, `customer_name`, `email`, `phone`, `address`, `created_at`, `user_id`) VALUES
+(1, 'John Smith', 'johnsmith89@gmail.com', '09783918362', 'Block 4 Lot 12, Green Valley Subdivision, Davao City, 8000', '2024-02-14 17:30:00', NULL),
+(2, 'Jane Smith', 'janesmith@yahoo.com', '09276543210', 'Unit 305 Sunshine Tower, Roxas Avenue, Davao City, 8000', '2024-03-21 22:45:00', NULL),
+(3, 'Robert Johnson', 'robertjohnson@outlook.com', '09376511710', '123 Mango Street, Ma-a, Davao City, 8000', '2024-04-09 19:20:00', NULL),
+(4, 'Sarah Williams', 'sarahwilliams24@gmail.com', '09551456884', 'Phase 1, Block 8, Lot 15, Catalunan Grande, Davao City, 8000', '2024-05-05 00:30:00', NULL),
+(5, 'Michael Brown', 'michaelbrown@gmail.com', '09074687069', '789 JP Laurel Avenue, Bajada, Davao City, 8000', '2024-06-17 18:15:00', NULL),
+(6, 'Emily Davis', 'emilydavis92@yahoo.com', '09305696949', 'Door 3, JM Building, CM Recto Street, Davao City, 8000', '2024-06-30 21:45:00', NULL),
+(7, 'David Miller', 'davidmiller@outlook.com', '09285733452', 'Unit 1204 Apo View Hotel, Camus Street, Davao City, 8000', '2024-08-11 17:00:00', NULL),
+(8, 'Lisa Wilson', 'lisawilson88@gmail.com', '09740205540', 'Block 15 Lot 7, NHA Buhangin, Davao City, 8000', '2024-09-24 23:20:00', NULL),
+(9, 'James Anderson', 'jamesanderson@yahoo.com', '09135886638', '567 Quimpo Boulevard, Ecoland, Davao City, 8000', '2024-10-07 19:30:00', NULL),
+(10, 'Jennifer Taylor', 'jennifertaylor@gmail.com', '09327065652', 'Unit 506 Marco Polo Hotel, CM Recto Street, Davao City, 8000', '2024-10-29 22:10:00', NULL),
+(11, 'William Moore', 'williammoore77@outlook.com', '09043614343', '234 Ponciano Street, Poblacion District, Davao City, 8000', '2024-11-14 18:45:00', NULL),
+(12, 'Emma Thomas', 'emmathomas@yahoo.com', '09525764975', 'Door 2, Ground Floor, Victoria Plaza, JP Laurel Ave, Davao City, 8000', '2024-12-01 00:00:00', NULL),
+(13, 'merllak', 'merlak@gmail.com', '09783615372', 'Valencia City Bukidnon', '2024-12-11 08:21:42', 8),
+(14, 'hehe', 'hehe@gmail.com', '09738193746', 'Lapu-Lapu Street, Digos City', '2024-12-11 08:36:06', 9),
+(15, 'Brandon', 'brandon@gmail.com', '09892716483', 'Park, Digos City', '2024-12-11 09:06:28', 10),
+(16, 'Labu', 'labulabu@gmail.com', '09682713512', 'Luna Street, Digos City', '2024-12-12 14:47:11', 11),
+(17, 'Zenitsu', 'zenitsu@gmail.com', '09728467132', 'Rizal Park, Digos City', '2024-12-12 14:50:50', 12);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `customer_notifications`
+--
+
+CREATE TABLE `customer_notifications` (
+  `notification_id` int(11) NOT NULL,
+  `order_id` varchar(20) NOT NULL,
+  `notification_type` enum('ORDER_CONFIRMATION','SHIPPING_UPDATE','DELIVERY_CONFIRMATION') NOT NULL,
+  `sent_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `status` enum('SENT','FAILED') NOT NULL,
+  `message` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `orders`
+--
+
+CREATE TABLE `orders` (
+  `order_id` varchar(20) NOT NULL,
+  `customer_id` int(11) NOT NULL,
+  `status` enum('PENDING','VERIFIED','PACKED','SHIPPED','DELIVERED','CANCELLED') NOT NULL DEFAULT 'PENDING',
+  `notification_status` enum('PENDING','SENT','FAILED') DEFAULT 'PENDING',
+  `order_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `last_updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `tracking_number` varchar(50) DEFAULT NULL,
+  `carrier_id` int(11) DEFAULT NULL,
+  `shipping_dock` varchar(50) DEFAULT NULL,
+  `dispatch_time` timestamp NULL DEFAULT NULL,
+  `priority` enum('HIGH','MEDIUM','LOW') NOT NULL DEFAULT 'MEDIUM',
+  `label` enum('Fragile Items','Do Not Stack','Keep Dry','Temperature Sensitive','Hazardous Material','Heavy Package') DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`order_id`, `customer_id`, `status`, `notification_status`, `order_date`, `last_updated`, `tracking_number`, `carrier_id`, `shipping_dock`, `dispatch_time`, `priority`, `label`) VALUES
+('ORD-001', 1, 'SHIPPED', 'PENDING', '2024-12-03 17:00:00', '2024-12-07 05:00:35', 'TRK15123123', 1, NULL, NULL, 'HIGH', 'Fragile Items'),
+('ORD-002', 2, 'SHIPPED', 'PENDING', '2024-12-03 17:00:00', '2024-12-07 05:00:35', 'TRK15123124', 2, NULL, NULL, 'MEDIUM', 'Heavy Package'),
+('ORD-003', 3, 'SHIPPED', 'PENDING', '2024-12-03 09:00:00', '2024-12-11 05:02:31', 'TRK1512312', 8, NULL, NULL, 'MEDIUM', 'Temperature Sensitive'),
+('ORD-004', 4, 'DELIVERED', 'PENDING', '2024-12-03 09:00:00', '2024-12-07 05:00:35', 'TRK15123136', 4, NULL, NULL, 'HIGH', ''),
+('ORD-005', 5, 'VERIFIED', 'PENDING', '2024-12-03 09:00:00', '2024-12-07 05:00:35', NULL, NULL, NULL, NULL, 'LOW', ''),
+('ORD-006', 6, 'SHIPPED', 'PENDING', '2024-12-03 09:00:00', '2024-12-04 00:48:00', 'TRK15123126', 6, NULL, NULL, 'MEDIUM', ''),
+('ORD-007', 7, 'DELIVERED', 'PENDING', '2024-12-03 09:00:00', '2024-12-07 16:31:37', NULL, 7, NULL, NULL, 'HIGH', ''),
+('ORD-008', 8, 'SHIPPED', 'PENDING', '2024-12-03 09:00:00', '2024-12-11 05:02:42', 'TRK15123138', 16, NULL, NULL, 'LOW', ''),
+('ORD-009', 9, 'SHIPPED', 'PENDING', '2024-12-03 09:00:00', '2024-12-07 05:00:35', 'TRK15123127', 9, NULL, NULL, 'MEDIUM', 'Fragile Items'),
+('ORD-010', 10, 'SHIPPED', 'PENDING', '2024-12-03 09:00:00', '2024-12-07 05:00:35', 'TRK15123128', 10, NULL, NULL, 'HIGH', 'Heavy Package'),
+('ORD-011', 1, 'VERIFIED', 'PENDING', '2024-12-03 09:00:00', '2024-12-07 16:00:19', NULL, NULL, NULL, NULL, 'LOW', 'Temperature Sensitive'),
+('ORD-012', 2, 'PACKED', 'PENDING', '2024-12-03 09:00:00', '2024-12-11 05:04:02', 'WH-241211130402-004', NULL, 'Dock B', NULL, 'HIGH', 'Fragile Items'),
+('ORD-013', 3, 'PACKED', 'PENDING', '2024-12-01 18:30:00', '2024-12-11 04:45:09', 'WH-241211124509-001', NULL, 'Dock A', NULL, 'HIGH', 'Fragile Items'),
+('ORD-014', 6, 'DELIVERED', 'PENDING', '2024-11-30 22:00:00', '2024-12-07 05:00:35', 'TRK15123129', 6, NULL, NULL, 'HIGH', 'Temperature Sensitive'),
+('ORD-015', 5, 'SHIPPED', 'PENDING', '2024-11-29 16:15:00', '2024-12-07 05:00:35', 'TRK15123130', 2, NULL, NULL, 'MEDIUM', ''),
+('ORD-016', 5, 'PENDING', 'PENDING', '2024-11-29 16:15:00', '2024-12-07 05:00:35', NULL, NULL, NULL, NULL, '', ''),
+('ORD-017', 5, 'VERIFIED', 'PENDING', '2024-11-29 16:15:00', '2024-12-12 14:54:13', NULL, NULL, NULL, NULL, '', ''),
+('ORD-018', 5, 'PENDING', 'PENDING', '2024-11-29 16:15:00', '2024-12-07 05:00:35', NULL, NULL, NULL, NULL, '', ''),
+('ORD-019', 9, 'PENDING', 'PENDING', '2024-12-11 16:51:08', '2024-12-11 16:51:08', NULL, NULL, NULL, NULL, 'MEDIUM', NULL),
+('ORD-020', 14, 'VERIFIED', 'PENDING', '2024-12-11 16:56:45', '2024-12-12 15:37:36', NULL, NULL, NULL, NULL, 'MEDIUM', NULL),
+('ORD-021', 13, 'PENDING', 'PENDING', '2024-12-11 16:59:01', '2024-12-11 16:59:01', NULL, NULL, NULL, NULL, 'MEDIUM', NULL),
+('ORD-022', 13, 'PENDING', 'PENDING', '2024-12-11 16:59:08', '2024-12-11 16:59:08', NULL, NULL, NULL, NULL, 'MEDIUM', NULL),
+('ORD-023', 13, 'VERIFIED', 'PENDING', '2024-12-11 16:59:25', '2024-12-11 17:02:47', NULL, NULL, NULL, NULL, 'MEDIUM', NULL),
+('ORD-024', 16, 'PENDING', 'PENDING', '2024-12-12 14:48:12', '2024-12-12 14:48:12', NULL, NULL, NULL, NULL, 'MEDIUM', NULL),
+('ORD-025', 16, 'VERIFIED', 'PENDING', '2024-12-12 14:49:52', '2024-12-12 14:54:11', NULL, NULL, NULL, NULL, 'MEDIUM', NULL),
+('ORD-026', 17, 'SHIPPED', 'PENDING', '2024-12-12 14:51:24', '2024-12-12 16:19:34', 'WH-241213000726-002', 4, 'Dock A', NULL, 'HIGH', 'Fragile Items'),
+('ORD-027', 14, 'DELIVERED', 'PENDING', '2024-12-12 15:02:14', '2024-12-12 15:03:54', 'WH-241212230342-001', 17, 'Dock A', NULL, 'HIGH', 'Fragile Items'),
+('ORD-028', 17, 'PACKED', 'PENDING', '2024-12-12 15:04:57', '2024-12-12 16:06:35', 'WH-241213000635-001', NULL, 'Dock F', NULL, 'HIGH', 'Fragile Items'),
+('ORD-029', 17, 'SHIPPED', 'PENDING', '2024-12-12 15:05:13', '2024-12-12 16:16:18', 'WH-241213001057-003', 5, 'Dock H', NULL, 'HIGH', 'Fragile Items'),
+('ORD-030', 16, 'PENDING', 'PENDING', '2024-12-12 15:08:04', '2024-12-12 15:08:04', NULL, NULL, NULL, NULL, 'MEDIUM', 'Fragile Items'),
+('ORD-031', 17, 'VERIFIED', 'PENDING', '2024-12-12 16:22:03', '2024-12-12 16:22:21', NULL, NULL, NULL, NULL, 'MEDIUM', 'Temperature Sensitive'),
+('ORD-032', 17, 'PENDING', 'PENDING', '2024-12-13 01:03:12', '2024-12-13 01:03:12', NULL, NULL, NULL, NULL, 'MEDIUM', 'Temperature Sensitive'),
+('ORD-033', 14, 'SHIPPED', 'PENDING', '2024-12-13 01:07:00', '2024-12-13 01:08:18', 'WH-241213090810-005', 9, 'Dock B', NULL, 'HIGH', 'Fragile Items'),
+('ORD-034', 14, 'DELIVERED', 'PENDING', '2024-12-13 01:07:16', '2024-12-13 01:08:01', 'WH-241213090749-004', 5, 'Dock D', NULL, 'LOW', 'Keep Dry');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `order_items`
+--
+
+CREATE TABLE `order_items` (
+  `item_id` int(11) NOT NULL,
+  `order_id` varchar(20) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `location` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `order_items`
+--
+
+INSERT INTO `order_items` (`item_id`, `order_id`, `product_id`, `quantity`, `location`) VALUES
+(1, 'ORD-001', 4, 2, 'A-101'),
+(2, 'ORD-002', 6, 1, 'A-102'),
+(3, 'ORD-003', 8, 1, 'A-103'),
+(4, 'ORD-004', 5, 2, 'A-104'),
+(5, 'ORD-005', 9, 2, 'A-105'),
+(6, 'ORD-006', 7, 3, 'A-106'),
+(7, 'ORD-007', 10, 4, 'A-107'),
+(8, 'ORD-008', 12, 1, 'A-108'),
+(9, 'ORD-009', 3, 1, 'A-109'),
+(10, 'ORD-010', 15, 1, 'A-110'),
+(11, 'ORD-011', 14, 2, 'A-111'),
+(12, 'ORD-012', 16, 1, 'A-112'),
+(13, 'ORD-013', 17, 1, 'A-113'),
+(14, 'ORD-014', 18, 1, 'A-114'),
+(15, 'ORD-015', 20, 2, 'A-115'),
+(16, 'ORD-016', 12, 3, 'A-113'),
+(17, 'ORD-017', 3, 1, 'A-103'),
+(18, 'ORD-018', 7, 2, 'A-109'),
+(47, 'ORD-019', 5, 1, NULL),
+(48, 'ORD-019', 4, 1, NULL),
+(51, 'ORD-020', 4, 2, NULL),
+(54, 'ORD-021', 12, 1, NULL),
+(55, 'ORD-021', 9, 1, NULL),
+(56, 'ORD-022', 7, 1, NULL),
+(57, 'ORD-023', 10, 2, NULL),
+(58, 'ORD-023', 9, 1, NULL),
+(61, 'ORD-024', 4, 1, NULL),
+(65, 'ORD-025', 7, 2, NULL),
+(70, 'ORD-026', 7, 1, NULL),
+(78, 'ORD-028', 3, 2, NULL),
+(79, 'ORD-029', 18, 2, NULL),
+(80, 'ORD-030', 3, 2, NULL),
+(81, 'ORD-030', 8, 1, NULL),
+(82, 'ORD-031', 14, 1, NULL),
+(83, 'ORD-031', 15, 1, NULL),
+(84, 'ORD-031', 16, 1, NULL),
+(85, 'ORD-032', 8, 1, NULL),
+(86, 'ORD-033', 5, 1, NULL),
+(87, 'ORD-033', 8, 1, NULL),
+(88, 'ORD-034', 4, 1, NULL);
+
+--
+-- Triggers `order_items`
+--
+DELIMITER $$
+CREATE TRIGGER `auto_assign_label` AFTER INSERT ON `order_items` FOR EACH ROW BEGIN
+    DECLARE product_category VARCHAR(50);
+    DECLARE product_weight DECIMAL(10,2);
+    DECLARE new_label VARCHAR(50);
+    
+    -- Get product information
+    SELECT category, weight INTO product_category, product_weight
+    FROM products
+    WHERE product_id = NEW.product_id;
+    
+    -- Determine appropriate label
+    IF product_category = 'Electronics' THEN
+        SET new_label = 'Fragile Items';
+    ELSEIF product_weight * NEW.quantity > 10 THEN
+        SET new_label = 'Heavy Package';
+    ELSEIF product_category = 'Components' THEN
+        SET new_label = 'Temperature Sensitive';
+    END IF;
+    
+    -- Update order label if not already set
+    IF new_label IS NOT NULL THEN
+        UPDATE orders
+        SET label = COALESCE(label, new_label)
+        WHERE order_id = NEW.order_id;
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `packing_details`
+--
+
+CREATE TABLE `packing_details` (
+  `packing_id` int(11) NOT NULL,
+  `order_id` varchar(20) NOT NULL,
+  `box_size` varchar(50) DEFAULT NULL,
+  `packing_materials` text DEFAULT NULL,
+  `packed_by` int(11) DEFAULT NULL,
+  `packed_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `products`
+--
+
+CREATE TABLE `products` (
+  `product_id` int(11) NOT NULL,
+  `product_name` varchar(255) NOT NULL,
+  `price` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `stock` int(11) NOT NULL DEFAULT 0,
+  `description` text DEFAULT NULL,
+  `weight` decimal(10,2) DEFAULT 0.00,
+  `category` enum('Electronics','Accessories','Components','Peripherals','Storage','Networking') NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `image_data` longblob DEFAULT NULL,
+  `active` tinyint(1) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `products`
+--
+
+INSERT INTO `products` (`product_id`, `product_name`, `price`, `stock`, `description`, `weight`, `category`, `created_at`, `image_data`, `active`) VALUES
+(3, '4K Monitor', 15999.00, 11, 'Ultra HD Display Monitor', 5.00, 'Electronics', '2024-01-08 08:00:00', NULL, 1),
+(4, 'Mechanical Keyboard', 2999.00, 25, 'RGB Gaming Keyboard', 1.20, 'Peripherals', '2024-01-22 08:00:00', NULL, 1),
+(5, 'Gaming Headset', 1999.00, 23, 'Wireless Gaming Headset', 0.35, 'Peripherals', '2024-01-29 08:00:00', NULL, 1),
+(6, 'Desktop Computer', 55999.00, 8, 'High-end Gaming PC', 12.00, 'Electronics', '2024-01-18 08:00:00', NULL, 1),
+(7, 'Webcam', 1499.00, 36, 'HD Webcam with Microphone', 0.15, 'Peripherals', '2024-01-05 08:00:00', NULL, 1),
+(8, 'Graphics Card', 25999.00, 9, 'Gaming Graphics Card', 1.50, 'Components', '2024-02-01 08:00:00', NULL, 1),
+(9, 'SSD Drive', 4999.00, 43, '1TB Solid State Drive', 0.10, 'Storage', '2024-01-26 08:00:00', NULL, 1),
+(10, 'Gaming Mouse Pad', 599.00, 98, 'Extended RGB Mouse Pad', 0.30, 'Accessories', '2024-02-02 08:00:00', NULL, 1),
+(12, 'Wireless Keyboard', 2499.00, 39, 'Low profile wireless keyboard', 0.65, 'Peripherals', '2024-01-12 08:00:00', NULL, 1),
+(13, 'USB Type-C Dock', 3999.00, 25, 'Multi-port docking station', 0.30, 'Accessories', '2024-01-14 08:00:00', NULL, 1),
+(14, 'CPU Cooler', 3499.00, 14, 'RGB CPU air cooler', 0.85, 'Components', '2024-02-05 08:00:00', NULL, 1),
+(15, 'Gaming Chair', 8999.00, 9, 'Ergonomic gaming chair', 15.00, 'Accessories', '2024-01-19 08:00:00', NULL, 1),
+(16, 'WiFi Router', 3999.00, 19, 'Dual-band gaming router', 0.45, 'Networking', '2024-02-17 08:00:00', NULL, 1),
+(17, 'External HDD', 5999.00, 30, '4TB external hard drive', 0.40, 'Storage', '2024-01-02 08:00:00', NULL, 1),
+(18, 'Power Supply', 4999.00, 13, '850W Gold certified PSU', 2.50, 'Components', '2024-02-14 08:00:00', NULL, 1),
+(19, 'RGB Case Fan', 899.00, 50, '120mm RGB cooling fan', 0.15, 'Components', '2024-02-09 08:00:00', NULL, 1),
+(20, 'Gaming Speakers', 2999.00, 20, '2.1 RGB gaming speakers', 3.50, 'Peripherals', '2024-01-08 08:00:00', NULL, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `product_history`
+--
+
+CREATE TABLE `product_history` (
+  `history_id` int(11) NOT NULL,
+  `action_type` enum('ADDED','DELETED') NOT NULL,
+  `product_id` int(11) DEFAULT NULL,
+  `product_name` varchar(255) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `stock` int(11) NOT NULL,
+  `category` varchar(50) NOT NULL,
+  `admin_id` int(11) NOT NULL,
+  `action_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `reason` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `receipts`
+--
+
+CREATE TABLE `receipts` (
+  `receipt_id` varchar(20) NOT NULL,
+  `date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `subtotal` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `tax` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `total` decimal(10,2) NOT NULL DEFAULT 0.00
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `receipt_items`
+--
+
+CREATE TABLE `receipt_items` (
+  `receipt_id` varchar(20) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `subtotal` decimal(10,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `route_optimization`
+--
+
+CREATE TABLE `route_optimization` (
+  `route_id` int(11) NOT NULL,
+  `start_location` varchar(255) NOT NULL,
+  `end_location` varchar(255) NOT NULL,
+  `optimized_route` text DEFAULT NULL,
+  `estimated_time` time DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shipping_docks`
+--
+
+CREATE TABLE `shipping_docks` (
+  `dock_id` int(11) NOT NULL,
+  `dock_name` varchar(50) NOT NULL,
+  `location` varchar(100) NOT NULL,
+  `status` enum('ACTIVE','INACTIVE','MAINTENANCE') NOT NULL DEFAULT 'ACTIVE',
+  `capacity` int(11) NOT NULL,
+  `last_maintenance_date` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `shipping_docks`
+--
+
+INSERT INTO `shipping_docks` (`dock_id`, `dock_name`, `location`, `status`, `capacity`, `last_maintenance_date`) VALUES
+(1, 'Dock A', 'North Wing', 'ACTIVE', 5, '2024-11-15'),
+(2, 'Dock B', 'North Wing', 'ACTIVE', 5, '2024-11-20'),
+(3, 'Dock C', 'East Wing', 'ACTIVE', 3, '2024-11-25'),
+(4, 'Dock D', 'East Wing', 'MAINTENANCE', 3, '2024-12-01'),
+(5, 'Dock E', 'South Wing', 'ACTIVE', 4, '2024-11-10'),
+(6, 'Dock F', 'South Wing', 'INACTIVE', 4, NULL),
+(7, 'Dock G', 'West Wing', 'ACTIVE', 6, '2024-11-05'),
+(8, 'Dock H', 'West Wing', 'ACTIVE', 6, '2024-11-30');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shipping_logs`
+--
+
+CREATE TABLE `shipping_logs` (
+  `log_id` int(11) NOT NULL,
+  `order_id` varchar(20) NOT NULL,
+  `status` varchar(50) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
+  `user_id` int(11) NOT NULL,
+  `notes` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `shipping_logs`
+--
+
+INSERT INTO `shipping_logs` (`log_id`, `order_id`, `status`, `timestamp`, `user_id`, `notes`) VALUES
+(1, 'ORD-001', 'PACKED', '2024-12-03 17:00:00', 1, 'Order packed and ready for shipping'),
+(2, 'ORD-002', 'SHIPPED', '2024-12-03 17:00:00', 2, 'Order dispatched with carrier'),
+(3, 'ORD-003', 'PENDING', '2024-12-03 09:00:00', 1, 'Order received'),
+(4, 'ORD-004', 'VERIFIED', '2024-12-03 09:00:00', 2, 'Order verification completed'),
+(6, 'ORD-006', 'SHIPPED', '2024-12-03 09:00:00', 1, 'Order dispatched to carrier'),
+(7, 'ORD-007', 'PENDING', '2024-12-03 09:00:00', 2, 'New order processing'),
+(9, 'ORD-009', 'PACKED', '2024-12-03 09:00:00', 1, 'Packing completed'),
+(10, 'ORD-010', 'SHIPPED', '2024-12-03 09:00:00', 2, 'Successfully shipped'),
+(12, 'ORD-012', 'VERIFIED', '2024-12-03 09:00:00', 1, 'Verified and ready for packing');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `accountdetails`
+--
+ALTER TABLE `accountdetails`
+  ADD PRIMARY KEY (`user_id`);
+
+--
+-- Indexes for table `carriers`
+--
+ALTER TABLE `carriers`
+  ADD PRIMARY KEY (`carrier_id`);
+
+--
+-- Indexes for table `customers`
+--
+ALTER TABLE `customers`
+  ADD PRIMARY KEY (`customer_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `customer_notifications`
+--
+ALTER TABLE `customer_notifications`
+  ADD PRIMARY KEY (`notification_id`),
+  ADD KEY `order_id` (`order_id`);
+
+--
+-- Indexes for table `orders`
+--
+ALTER TABLE `orders`
+  ADD PRIMARY KEY (`order_id`),
+  ADD KEY `customer_id` (`customer_id`),
+  ADD KEY `carrier_id` (`carrier_id`);
+
+--
+-- Indexes for table `order_items`
+--
+ALTER TABLE `order_items`
+  ADD PRIMARY KEY (`item_id`),
+  ADD KEY `order_id` (`order_id`),
+  ADD KEY `product_id` (`product_id`);
+
+--
+-- Indexes for table `packing_details`
+--
+ALTER TABLE `packing_details`
+  ADD PRIMARY KEY (`packing_id`),
+  ADD KEY `order_id` (`order_id`),
+  ADD KEY `packed_by` (`packed_by`);
+
+--
+-- Indexes for table `products`
+--
+ALTER TABLE `products`
+  ADD PRIMARY KEY (`product_id`);
+
+--
+-- Indexes for table `product_history`
+--
+ALTER TABLE `product_history`
+  ADD PRIMARY KEY (`history_id`),
+  ADD KEY `admin_id` (`admin_id`);
+
+--
+-- Indexes for table `receipts`
+--
+ALTER TABLE `receipts`
+  ADD PRIMARY KEY (`receipt_id`);
+
+--
+-- Indexes for table `receipt_items`
+--
+ALTER TABLE `receipt_items`
+  ADD KEY `receipt_id` (`receipt_id`),
+  ADD KEY `product_id` (`product_id`);
+
+--
+-- Indexes for table `route_optimization`
+--
+ALTER TABLE `route_optimization`
+  ADD PRIMARY KEY (`route_id`);
+
+--
+-- Indexes for table `shipping_docks`
+--
+ALTER TABLE `shipping_docks`
+  ADD PRIMARY KEY (`dock_id`);
+
+--
+-- Indexes for table `shipping_logs`
+--
+ALTER TABLE `shipping_logs`
+  ADD PRIMARY KEY (`log_id`),
+  ADD KEY `order_id` (`order_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `accountdetails`
+--
+ALTER TABLE `accountdetails`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT for table `carriers`
+--
+ALTER TABLE `carriers`
+  MODIFY `carrier_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+
+--
+-- AUTO_INCREMENT for table `customers`
+--
+ALTER TABLE `customers`
+  MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+
+--
+-- AUTO_INCREMENT for table `customer_notifications`
+--
+ALTER TABLE `customer_notifications`
+  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `order_items`
+--
+ALTER TABLE `order_items`
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=89;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `customer_notifications`
+--
+ALTER TABLE `customer_notifications`
+  ADD CONSTRAINT `customer_notifications_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
