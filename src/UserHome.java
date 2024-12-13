@@ -23,11 +23,6 @@ public class UserHome extends javax.swing.JFrame {
     private Connection connection;
     private String loggedInUsername;
 
-    private void startNotificationTimer() {
-        Timer timer = new Timer(30000, (e) -> refreshNotifications()); // Check every 30 seconds
-        timer.start();
-    }
-
     /**
      * Creates new form UserHome
      */
@@ -37,6 +32,7 @@ public class UserHome extends javax.swing.JFrame {
         initializeDatabaseConnection();
         setupNotificationPanel();
         loadNotifications();
+        updateOrderStatistics(); // Add this line
         startNotificationTimer();
     }
 
@@ -59,6 +55,19 @@ public class UserHome extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextField3 = new javax.swing.JTextField();
+        jPanel5 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        PendingVerification = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jPanel6 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        ReadyToShip = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jPanel7 = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        TotalOrder = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setSize(new java.awt.Dimension(1098, 705));
@@ -158,27 +167,155 @@ public class UserHome extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(jTextField3);
 
+        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true), "", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 12), new java.awt.Color(179, 1, 104))); // NOI18N
+        jPanel5.setPreferredSize(new java.awt.Dimension(160, 130));
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel4.setText("Pending Order");
+
+        PendingVerification.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        PendingVerification.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        PendingVerification.setText("0");
+
+        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel9.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asnari Pacalna\\Documents\\NetBeansProjects\\WarehouseSystem\\src\\Icons\\pending.png")); // NOI18N
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
+            .addComponent(PendingVerification, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel9)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(PendingVerification, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(25, Short.MAX_VALUE))
+        );
+
+        jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true), "", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 12), new java.awt.Color(179, 1, 104))); // NOI18N
+        jPanel6.setPreferredSize(new java.awt.Dimension(160, 44));
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel5.setText("Completed Order");
+
+        ReadyToShip.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        ReadyToShip.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        ReadyToShip.setText("0");
+
+        jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel11.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asnari Pacalna\\Documents\\NetBeansProjects\\WarehouseSystem\\src\\Icons\\check.png")); // NOI18N
+
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(63, 63, 63)
+                .addComponent(jLabel14)
+                .addContainerGap(95, Short.MAX_VALUE))
+            .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(ReadyToShip, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel11)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(ReadyToShip, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel14)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true), "", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 12), new java.awt.Color(179, 1, 104))); // NOI18N
+        jPanel7.setPreferredSize(new java.awt.Dimension(160, 130));
+
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel6.setText("To Receive");
+
+        TotalOrder.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        TotalOrder.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        TotalOrder.setText("0");
+
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel8.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asnari Pacalna\\Documents\\NetBeansProjects\\WarehouseSystem\\src\\Icons\\package.png")); // NOI18N
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(TotalOrder, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE)))
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(TotalOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(25, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap(599, Short.MAX_VALUE)
+                .addContainerGap(32, Short.MAX_VALUE)
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(31, 31, 31)
+                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(30, 30, 30)
+                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(23, 23, 23)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(60, 60, 60))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(34, 34, 34))))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addGap(45, 45, 45)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 578, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(45, 45, 45)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 578, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(64, 64, 64)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(jPanel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
+                                .addComponent(jPanel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -199,14 +336,101 @@ public class UserHome extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+private void startNotificationTimer() {
+        Timer timer = new Timer(30000, (e) -> {
+            try {
+                refreshNotifications();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                // Silently handle the error to prevent popup spam
+                // Optionally update UI to show connection status
+            }
+        });
+        timer.start();
+    }
 
     private void initializeDatabaseConnection() {
         try {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
             Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/wms", "root", "");
+            connection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/wms?autoReconnect=true&useSSL=false",
+                    "root",
+                    ""
+            );
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Database connection error: " + e.getMessage());
+            JOptionPane.showMessageDialog(this,
+                    "Error connecting to database: " + e.getMessage(),
+                    "Database Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void updateOrderStatistics() {
+        try {
+            refreshDatabaseConnection();
+            String customerQuery = "SELECT c.customer_id FROM customers c "
+                    + "JOIN accountdetails a ON c.user_id = a.user_id "
+                    + "WHERE a.accUsername = ?";
+
+            PreparedStatement pst = connection.prepareStatement(customerQuery);
+            pst.setString(1, loggedInUsername);
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                int customerId = rs.getInt("customer_id");
+
+                // Count pending orders (status = 'PENDING')
+                String pendingQuery = "SELECT COUNT(*) as count FROM orders "
+                        + "WHERE customer_id = ? AND status = 'PENDING'";
+                PreparedStatement pendingPst = connection.prepareStatement(pendingQuery);
+                pendingPst.setInt(1, customerId);
+                ResultSet pendingRs = pendingPst.executeQuery();
+                if (pendingRs.next()) {
+                    PendingVerification.setText(String.valueOf(pendingRs.getInt("count")));
+                }
+
+                // Count orders to receive (status = 'SHIPPED')
+                String toReceiveQuery = "SELECT COUNT(*) as count FROM orders "
+                        + "WHERE customer_id = ? AND status = 'SHIPPED'";
+                PreparedStatement toReceivePst = connection.prepareStatement(toReceiveQuery);
+                toReceivePst.setInt(1, customerId);
+                ResultSet toReceiveRs = toReceivePst.executeQuery();
+                if (toReceiveRs.next()) {
+                    TotalOrder.setText(String.valueOf(toReceiveRs.getInt("count")));
+                }
+
+                // Count completed orders (status = 'DELIVERED')
+                String completedQuery = "SELECT COUNT(*) as count FROM orders "
+                        + "WHERE customer_id = ? AND status = 'DELIVERED'";
+                PreparedStatement completedPst = connection.prepareStatement(completedQuery);
+                completedPst.setInt(1, customerId);
+                ResultSet completedRs = completedPst.executeQuery();
+                if (completedRs.next()) {
+                    ReadyToShip.setText(String.valueOf(completedRs.getInt("count")));
+                }
+
+                // Close all result sets and prepared statements
+                completedRs.close();
+                completedPst.close();
+                toReceiveRs.close();
+                toReceivePst.close();
+                pendingRs.close();
+                pendingPst.close();
+            }
+
+            rs.close();
+            pst.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Error updating order statistics: " + e.getMessage(),
+                    "Database Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -228,90 +452,94 @@ public class UserHome extends javax.swing.JFrame {
         jScrollPane1.setBorder(BorderFactory.createLineBorder(new Color(100, 100, 100), 1)); // Darker border
     }
 
-  private void loadNotifications() {
-    try {
-        String customerQuery = "SELECT c.customer_id FROM customers c " +
-                             "JOIN accountdetails a ON c.user_id = a.user_id " +
-                             "WHERE a.accUsername = ?";
-        
-        PreparedStatement pst = connection.prepareStatement(customerQuery);
-        pst.setString(1, loggedInUsername);
-        ResultSet rs = pst.executeQuery();
-        
-        if (rs.next()) {
-            int customerId = rs.getInt("customer_id");
-            
-            // Modified to use orders table
-            String orderQuery = "SELECT o.order_id, o.status, o.last_updated, " +
-                              "GROUP_CONCAT(CONCAT(p.product_name, ' (', oi.quantity, ')') SEPARATOR ', ') as products " +
-                              "FROM orders o " +
-                              "JOIN order_items oi ON o.order_id = oi.order_id " +
-                              "JOIN products p ON oi.product_id = p.product_id " +
-                              "WHERE o.customer_id = ? AND " +
-                              "o.status IN ('VERIFIED', 'PACKED', 'SHIPPED', 'DELIVERED') " +
-                              "GROUP BY o.order_id, o.status, o.last_updated " +
-                              "ORDER BY o.last_updated DESC";
+    private void loadNotifications() {
+        try {
+            refreshDatabaseConnection();
+            String customerQuery = "SELECT c.customer_id FROM customers c "
+                    + "JOIN accountdetails a ON c.user_id = a.user_id "
+                    + "WHERE a.accUsername = ?";
 
-            PreparedStatement orderPst = connection.prepareStatement(orderQuery);
-            orderPst.setInt(1, customerId);
-            ResultSet orderRs = orderPst.executeQuery();
+            PreparedStatement pst = connection.prepareStatement(customerQuery);
+            pst.setString(1, loggedInUsername);
+            ResultSet rs = pst.executeQuery();
 
-            StringBuilder notifications = new StringBuilder();
-            
-            while (orderRs.next()) {
-                String products = orderRs.getString("products");
-                Timestamp timestamp = orderRs.getTimestamp("last_updated");
-                String status = orderRs.getString("status");
-                
-                String message;
-                switch(status) {
-                    case "VERIFIED":
-                        message = "Your Order has been approved!";
-                        break;
-                    case "PACKED":
-                        message = "Your Order has been packed and ready for shipping!";
-                        break;
-                    case "SHIPPED":
-                        message = "Your Order is on the way!";
-                        break;
-                    case "DELIVERED":
-                        message = "Your Order has been delivered!";
-                        break;
-                    default:
-                        message = "Your Order status has been updated!";
+            if (rs.next()) {
+                int customerId = rs.getInt("customer_id");
+
+                // Modified to use orders table
+                String orderQuery = "SELECT o.order_id, o.status, o.last_updated, "
+                        + "GROUP_CONCAT(CONCAT(p.product_name, ' (', oi.quantity, ')') SEPARATOR ', ') as products "
+                        + "FROM orders o "
+                        + "JOIN order_items oi ON o.order_id = oi.order_id "
+                        + "JOIN products p ON oi.product_id = p.product_id "
+                        + "WHERE o.customer_id = ? AND "
+                        + "o.status IN ('VERIFIED', 'PACKED', 'SHIPPED', 'DELIVERED') "
+                        + "GROUP BY o.order_id, o.status, o.last_updated "
+                        + "ORDER BY o.last_updated DESC";
+
+                PreparedStatement orderPst = connection.prepareStatement(orderQuery);
+                orderPst.setInt(1, customerId);
+                ResultSet orderRs = orderPst.executeQuery();
+
+                StringBuilder notifications = new StringBuilder();
+
+                while (orderRs.next()) {
+                    String products = orderRs.getString("products");
+                    Timestamp timestamp = orderRs.getTimestamp("last_updated");
+                    String status = orderRs.getString("status");
+
+                    String message;
+                    switch (status) {
+                        case "VERIFIED":
+                            message = "Your Order has been approved!";
+                            break;
+                        case "PACKED":
+                            message = "Your Order has been packed and ready for shipping!";
+                            break;
+                        case "SHIPPED":
+                            message = "Your Order is on the way!";
+                            break;
+                        case "DELIVERED":
+                            message = "Your Order has been delivered!";
+                            break;
+                        default:
+                            message = "Your Order status has been updated!";
+                    }
+
+                    notifications.append(message).append("\n");
+                    notifications.append("Products: ").append(products).append("\n");
+                    notifications.append("Date: ").append(timestamp).append("\n");
+                    notifications.append("-------------------------------------------------\n");
                 }
-                
-                notifications.append(message).append("\n");
-                notifications.append("Products: ").append(products).append("\n");
-                notifications.append("Date: ").append(timestamp).append("\n");
-                notifications.append("-------------------------------------------------\n");
+
+                // Update the notification area
+                Component view = jScrollPane1.getViewport().getView();
+                if (view instanceof JTextPane) {
+                    JTextPane textPane = (JTextPane) view;
+                    textPane.setText(notifications.toString());
+
+                    // Ensure center alignment is maintained
+                    StyledDocument doc = textPane.getStyledDocument();
+                    SimpleAttributeSet center = new SimpleAttributeSet();
+                    StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+                    doc.setParagraphAttributes(0, doc.getLength(), center, false);
+                }
+
+                orderRs.close();
+                orderPst.close();
             }
 
-            // Update the notification area
-            Component view = jScrollPane1.getViewport().getView();
-            if (view instanceof JTextPane) {
-                JTextPane textPane = (JTextPane) view;
-                textPane.setText(notifications.toString());
-                
-                // Ensure center alignment is maintained
-                StyledDocument doc = textPane.getStyledDocument();
-                SimpleAttributeSet center = new SimpleAttributeSet();
-                StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-                doc.setParagraphAttributes(0, doc.getLength(), center, false);
-            }
+            rs.close();
+            pst.close();
 
-            orderRs.close();
-            orderPst.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Error loading notifications: " + e.getMessage(),
+                    "Database Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
-        
-        rs.close();
-        pst.close();
-
-    } catch (SQLException e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error loading notifications: " + e.getMessage());
     }
-}
 
     private JPanel createNotificationPanel(String orderId, String products, Timestamp timestamp) {
         JPanel panel = new JPanel();
@@ -357,18 +585,58 @@ public class UserHome extends javax.swing.JFrame {
     }
 
     public void refreshNotifications() {
-        loadNotifications();
+        try {
+            refreshDatabaseConnection();
+            loadNotifications();
+            updateOrderStatistics();
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Error refreshing data: " + e.getMessage(),
+                    "Refresh Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void refreshDatabaseConnection() {
+        try {
+            if (connection == null || connection.isClosed()) {
+                initializeDatabaseConnection();
+            } else {
+                // Test if connection is still valid
+                if (!connection.isValid(5)) { // 5 second timeout
+                    connection.close();
+                    initializeDatabaseConnection();
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            initializeDatabaseConnection();
+        }
     }
 
     public void windowActivated(java.awt.event.WindowEvent evt) {
         refreshNotifications();
     }
 
+    private String getStatusDescription(String status) {
+        switch (status) {
+            case "PENDING":
+                return "Pending Order";
+            case "SHIPPED":
+                return "To Receive";
+            case "DELIVERED":
+                return "Completed Order";
+            default:
+                return status;
+        }
+    }
+
     // Don't forget to close the connection when the form is closed
     @Override
     public void dispose() {
         try {
-            if (connection != null && !connection.isClosed()) {
+            if (connection != null) {
                 connection.close();
             }
         } catch (SQLException e) {
@@ -468,14 +736,27 @@ public class UserHome extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel PendingVerification;
+    private javax.swing.JLabel ReadyToShip;
+    private javax.swing.JLabel TotalOrder;
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;
     private javax.swing.JButton jButton14;
     private javax.swing.JButton jButton15;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jTextField3;
     // End of variables declaration//GEN-END:variables
