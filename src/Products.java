@@ -172,7 +172,7 @@ public class Products extends javax.swing.JFrame {
                                     java.awt.Image img = javax.imageio.ImageIO.read(
                                             new java.io.ByteArrayInputStream(imageData));
                                     if (img != null) {
-                                        img = img.getScaledInstance(139, 115,
+                                        img = img.getScaledInstance(139, 139,
                                                 java.awt.Image.SCALE_SMOOTH);
                                         jLabel8.setIcon(new javax.swing.ImageIcon(img));
                                     }
@@ -570,8 +570,8 @@ public class Products extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26)
+                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)

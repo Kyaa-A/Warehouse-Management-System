@@ -380,7 +380,7 @@ public class UserProduct extends javax.swing.JFrame {
             try {
                 BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(imageData));
                 int panelWidth = 200;
-                int panelHeight = 150;
+                int panelHeight = 170;
                 Image scaledImage = originalImage.getScaledInstance(panelWidth, panelHeight, Image.SCALE_SMOOTH);
                 JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
                 imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
