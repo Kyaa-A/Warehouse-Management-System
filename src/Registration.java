@@ -165,8 +165,6 @@ public class Registration extends javax.swing.JFrame {
             .addGap(0, 683, Short.MAX_VALUE)
         );
 
-        jToggleButton1.setText("E");
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(

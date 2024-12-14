@@ -256,9 +256,6 @@
             <Component class="javax.swing.JPasswordField" name="jPasswordField1">
             </Component>
             <Component class="javax.swing.JToggleButton" name="jToggleButton1">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="E"/>
-              </Properties>
             </Component>
           </SubComponents>
         </Container>
