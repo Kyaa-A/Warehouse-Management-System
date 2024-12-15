@@ -103,79 +103,136 @@ public class UserProduct extends javax.swing.JFrame {
     }
 
     private void saveOrder(DefaultTableModel model, double total, double cash) {
-        try {
-            connection.setAutoCommit(false);
-            String orderId = generateOrderId();
-            int customerId = getCustomerId();
+    try {
+        connection.setAutoCommit(false);
+        String orderId = generateOrderId();
+        int customerId = getCustomerId();
 
-            // Insert into orders table
-            String query = "INSERT INTO orders (order_id, customer_id, status, order_date) VALUES (?, ?, 'PENDING', NOW())";
-            PreparedStatement pst = connection.prepareStatement(query);
-            pst.setString(1, orderId);
-            pst.setInt(2, customerId);
-            pst.executeUpdate();
-            pst.close();
+        // Insert into orders table
+        String query = "INSERT INTO orders (order_id, customer_id, status, order_date) VALUES (?, ?, 'PENDING', NOW())";
+        PreparedStatement pst = connection.prepareStatement(query);
+        pst.setString(1, orderId);
+        pst.setInt(2, customerId);
+        pst.executeUpdate();
+        pst.close();
 
-            // Save order items and update product stock
-            String itemsQuery = "INSERT INTO order_items (order_id, product_id, quantity) VALUES (?, ?, ?)";
-            String updateStockQuery = "UPDATE products SET stock = stock - ? WHERE product_id = ?";
+        // Save order items and update product stock
+        String itemsQuery = "INSERT INTO order_items (order_id, product_id, quantity) VALUES (?, ?, ?)";
+        String updateStockQuery = "UPDATE products SET stock = stock - ? WHERE product_id = ?";
 
-            PreparedStatement itemsPst = connection.prepareStatement(itemsQuery);
-            PreparedStatement updateStockPst = connection.prepareStatement(updateStockQuery);
+        PreparedStatement itemsPst = connection.prepareStatement(itemsQuery);
+        PreparedStatement updateStockPst = connection.prepareStatement(updateStockQuery);
 
-            for (int i = 0; i < model.getRowCount(); i++) {
-                int productId = (Integer) model.getValueAt(i, 0);
-                int quantity = (Integer) model.getValueAt(i, 2);
+        for (int i = 0; i < model.getRowCount(); i++) {
+            int productId = (Integer) model.getValueAt(i, 0);
+            int quantity = (Integer) model.getValueAt(i, 2);
 
-                // Insert order items
-                itemsPst.setString(1, orderId);
-                itemsPst.setInt(2, productId);
-                itemsPst.setInt(3, quantity);
-                itemsPst.addBatch();
+            // Insert order items
+            itemsPst.setString(1, orderId);
+            itemsPst.setInt(2, productId);
+            itemsPst.setInt(3, quantity);
+            itemsPst.addBatch();
 
-                // Update product stock
-                updateStockPst.setInt(1, quantity);
-                updateStockPst.setInt(2, productId);
-                updateStockPst.addBatch();
+            // Update product stock
+            updateStockPst.setInt(1, quantity);
+            updateStockPst.setInt(2, productId);
+            updateStockPst.addBatch();
+        }
+
+        itemsPst.executeBatch();
+        updateStockPst.executeBatch();
+
+        connection.commit();  // Commit transaction
+
+        // Generate and display receipt
+        StringBuilder receipt = new StringBuilder();
+        receipt.append("===========================================\n");
+        receipt.append("               SALES RECEIPT               \n");
+        receipt.append("===========================================\n");
+        receipt.append(String.format("Order ID: %s\n", orderId));
+        receipt.append(String.format("Date: %s\n",
+                java.time.LocalDateTime.now().format(
+                        java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))));
+        receipt.append("-------------------------------------------\n");
+        receipt.append(String.format("%-3s %-25s %5s %12s\n",
+                "No.", "Product", "Qty", "Price"));
+        receipt.append("-------------------------------------------\n");
+
+        for (int i = 0; i < model.getRowCount(); i++) {
+            String product = model.getValueAt(i, 1).toString();
+            int quantity = (Integer) model.getValueAt(i, 2);
+            double price = (Double) model.getValueAt(i, 3);
+
+            if (product.length() > 22) {
+                product = product.substring(0, 22) + "...";
             }
 
-            itemsPst.executeBatch();
-            updateStockPst.executeBatch();
+            receipt.append(String.format("%-3d %-25s %5d %,12.2f\n",
+                    (i + 1), product, quantity, price));
+        }
 
-            connection.commit();  // Commit transaction
+        receipt.append("-------------------------------------------\n");
+        // New aligned format for totals section
+        receipt.append(String.format("%-25s ₱%,20.2f\n", "Total Amount:", total));
+        receipt.append(String.format("%-25s      ₱%,20.2f\n", "Cash:", cash));
+        receipt.append(String.format("%-25s    ₱%,20.2f\n", "Change:", cash - total));
+        receipt.append("===========================================\n");
+        receipt.append("          Thank you for shopping!          \n");
+        receipt.append("===========================================\n");
 
-            // Show success message
-            JOptionPane.showMessageDialog(this,
-                    "Order Successfully Processed!\nOrder ID: " + orderId,
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
+        // Set the receipt text in the text area
+        jTextArea1.setText(receipt.toString());
 
-            // Generate receipt
-            generateReceipt(model, total, cash, cash - total);
+        // Show success message and prompt for printing
+        int choice = JOptionPane.showConfirmDialog(this,
+                "Order Successfully Processed!\nOrder ID: " + orderId + "\n\nWould you like to print the receipt?",
+                "Success",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.INFORMATION_MESSAGE);
 
-            // Clear the cart and refresh product display
-            jButton11ActionPerformed(null);
-
-        } catch (SQLException e) {
+        if (choice == JOptionPane.YES_OPTION) {
             try {
-                connection.rollback();  // Rollback transaction on error
-            } catch (SQLException ex) {
-                ex.printStackTrace(System.err);
-            }
-            e.printStackTrace(System.err);
-            JOptionPane.showMessageDialog(this,
-                    "Error saving order: " + e.getMessage(),
-                    "Database Error",
-                    JOptionPane.ERROR_MESSAGE);
-        } finally {
-            try {
-                connection.setAutoCommit(true);  // Reset auto-commit
-            } catch (SQLException e) {
-                e.printStackTrace(System.err);
+                jTextArea1.print();
+            } catch (PrinterException pe) {
+                JOptionPane.showMessageDialog(this,
+                        "Error printing: " + pe.getMessage(),
+                        "Print Error",
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
-    }
 
+        // Ask if user wants to start a new transaction
+        int newTransaction = JOptionPane.showConfirmDialog(this,
+                "Would you like to start a new transaction?",
+                "New Transaction",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE);
+
+        if (newTransaction == JOptionPane.YES_OPTION) {
+            // Clear the cart and refresh product display
+            jButton11ActionPerformed(null);
+        }
+
+    } catch (SQLException e) {
+        try {
+            connection.rollback();  // Rollback transaction on error
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+        e.printStackTrace(System.err);
+        JOptionPane.showMessageDialog(this,
+                "Error saving order: " + e.getMessage(),
+                "Database Error",
+                JOptionPane.ERROR_MESSAGE);
+    } finally {
+        try {
+            connection.setAutoCommit(true);  // Reset auto-commit
+        } catch (SQLException e) {
+            e.printStackTrace(System.err);
+        }
+    }
+}
+    
     private int getCustomerId() {
         int customerId = -1;
         try {
@@ -481,9 +538,9 @@ public class UserProduct extends javax.swing.JFrame {
         }
 
         receipt.append("-------------------------------------------\n");
-        receipt.append(String.format("%34s %,12.2f\n", "Total Amount: ₱", total));
-        receipt.append(String.format("%34s %,12.2f\n", "Cash: ₱", cash));
-        receipt.append(String.format("%34s %,12.2f\n", "Change: ₱", balance));
+        receipt.append(String.format("%1s %,12.2f\n", "Total Amount: ₱", total));
+        receipt.append(String.format("%1s %,12.2f\n", "Cash: ₱", cash));
+        receipt.append(String.format("%1s %,12.2f\n", "Change: ₱", balance));
         receipt.append("===========================================\n");
         receipt.append("          Thank you for shopping!          \n");
         receipt.append("===========================================\n");
