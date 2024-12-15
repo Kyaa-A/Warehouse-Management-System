@@ -153,10 +153,11 @@ public class UserProduct extends javax.swing.JFrame {
         receipt.append(String.format("Date: %s\n",
                 java.time.LocalDateTime.now().format(
                         java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))));
-        receipt.append("-------------------------------------------\n");
+        receipt.append("-----------------------------------------------------------------------------\n");
+                     
         receipt.append(String.format("%-3s %-25s %5s %12s\n",
                 "No.", "Product", "Qty", "Price"));
-        receipt.append("-------------------------------------------\n");
+        receipt.append("-----------------------------------------------------------------------------\n");
 
         for (int i = 0; i < model.getRowCount(); i++) {
             String product = model.getValueAt(i, 1).toString();
@@ -171,11 +172,11 @@ public class UserProduct extends javax.swing.JFrame {
                     (i + 1), product, quantity, price));
         }
 
-        receipt.append("-------------------------------------------\n");
+        receipt.append("-----------------------------------------------------------------------------\n");
         // New aligned format for totals section
-        receipt.append(String.format("%-25s ₱%,20.2f\n", "Total Amount:", total));
-        receipt.append(String.format("%-25s      ₱%,20.2f\n", "Cash:", cash));
-        receipt.append(String.format("%-25s    ₱%,20.2f\n", "Change:", cash - total));
+        receipt.append(String.format("%-25s ₱%,20.2f \n", "Total Amount:", total));
+        receipt.append(String.format("%-25s      ₱%,20.2f \n", "Cash:", cash));
+        receipt.append(String.format("%-25s    ₱%,20.2f \n", "Change:", cash - total));
         receipt.append("===========================================\n");
         receipt.append("          Thank you for shopping!          \n");
         receipt.append("===========================================\n");
@@ -419,68 +420,85 @@ public class UserProduct extends javax.swing.JFrame {
     }
 // Helper method to create product panels
 
-    private JPanel createProductPanel(int id, String name, double price, int stock, byte[] imageData) {
+ private JPanel createProductPanel(int id, String name, double price, int stock, byte[] imageData) {
+    JPanel panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+    panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    panel.setPreferredSize(new Dimension(180, 300));
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        panel.setPreferredSize(new Dimension(180, 300));
-
-        JSpinner quantitySpinner = new JSpinner(new SpinnerNumberModel(0, 0, stock, 1));
-        JCheckBox purchaseBox = new JCheckBox("Purchase");
-
-        quantitySpinner.addChangeListener(e -> updatePurchaseStatus(id, name, price, (int) quantitySpinner.getValue(), purchaseBox.isSelected()));
-        purchaseBox.addActionListener(e -> updatePurchaseStatus(id, name, price, (int) quantitySpinner.getValue(), purchaseBox.isSelected()));
-
-        // Product image
-        if (imageData != null && imageData.length > 0) {
-            try {
-                BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(imageData));
-                int panelWidth = 200;
-                int panelHeight = 170;
-                Image scaledImage = originalImage.getScaledInstance(panelWidth, panelHeight, Image.SCALE_SMOOTH);
-                JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
-                imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                panel.add(imageLabel);
-            } catch (Exception e) {
-                e.printStackTrace();
-                JLabel errorLabel = new JLabel("Error loading image");
-                errorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                panel.add(errorLabel);
-            }
-        } else {
-            JLabel noImageLabel = new JLabel("No Image");
-            noImageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            noImageLabel.setPreferredSize(new Dimension(200, 150));
-            panel.add(noImageLabel);
+    // Create the image panel
+    JPanel imageContainer = new JPanel(new BorderLayout());
+    imageContainer.setPreferredSize(new Dimension(200, 170));
+    
+    if (imageData != null && imageData.length > 0) {
+        try {
+            BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(imageData));
+            Image scaledImage = originalImage.getScaledInstance(200, 170, Image.SCALE_SMOOTH);
+            JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
+            imageLabel.setHorizontalAlignment(JLabel.CENTER);
+            imageContainer.add(imageLabel, BorderLayout.CENTER);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JLabel errorLabel = new JLabel("Error loading image");
+            errorLabel.setHorizontalAlignment(JLabel.CENTER);
+            imageContainer.add(errorLabel, BorderLayout.CENTER);
         }
-
-        JLabel nameLabel = new JLabel(name);
-        nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
-
-        JLabel priceLabel = new JLabel(String.format("Price: ₱%.2f", price));
-        priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(nameLabel);
-        panel.add(Box.createVerticalStrut(5));
-        panel.add(priceLabel);
-        panel.add(Box.createVerticalStrut(5));
-
-        JPanel quantityPanel = new JPanel();
-        quantityPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-        quantityPanel.add(new JLabel("Quantity:"));
-        quantityPanel.add(quantitySpinner);
-        panel.add(quantityPanel);
-
-        panel.add(Box.createVerticalStrut(5));
-        panel.add(purchaseBox);
-        panel.add(Box.createVerticalStrut(10));
-
-        return panel;
+    } else {
+        JLabel noImageLabel = new JLabel("No Image");
+        noImageLabel.setHorizontalAlignment(JLabel.CENTER);
+        imageContainer.add(noImageLabel, BorderLayout.CENTER);
     }
 
+    // If stock is 0, overlay "Out of Stock" message
+    if (stock == 0) {
+        JPanel overlayPanel = new JPanel();
+        overlayPanel.setBackground(new Color(255, 255, 255, 200)); // Semi-transparent white
+        JLabel outOfStockLabel = new JLabel("OUT OF STOCK");
+        outOfStockLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        outOfStockLabel.setForeground(new Color(179, 1, 104)); // Match the app's color scheme
+        overlayPanel.add(outOfStockLabel);
+        imageContainer.add(overlayPanel, BorderLayout.CENTER);
+    }
+
+    panel.add(imageContainer);
+
+    JLabel nameLabel = new JLabel(name);
+    nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+    nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+
+    JLabel priceLabel = new JLabel(String.format("Price: ₱%.2f", price));
+    priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+    JSpinner quantitySpinner = new JSpinner(new SpinnerNumberModel(0, 0, stock, 1));
+    JCheckBox purchaseBox = new JCheckBox("Purchase");
+
+    // Disable controls if out of stock
+    if (stock == 0) {
+        quantitySpinner.setEnabled(false);
+        purchaseBox.setEnabled(false);
+    }
+
+    quantitySpinner.addChangeListener(e -> updatePurchaseStatus(id, name, price, (int) quantitySpinner.getValue(), purchaseBox.isSelected()));
+    purchaseBox.addActionListener(e -> updatePurchaseStatus(id, name, price, (int) quantitySpinner.getValue(), purchaseBox.isSelected()));
+
+    panel.add(Box.createVerticalStrut(10));
+    panel.add(nameLabel);
+    panel.add(Box.createVerticalStrut(5));
+    panel.add(priceLabel);
+    panel.add(Box.createVerticalStrut(5));
+
+    JPanel quantityPanel = new JPanel();
+    quantityPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+    quantityPanel.add(new JLabel("Quantity:"));
+    quantityPanel.add(quantitySpinner);
+    panel.add(quantityPanel);
+
+    panel.add(Box.createVerticalStrut(5));
+    panel.add(purchaseBox);
+    panel.add(Box.createVerticalStrut(10));
+
+    return panel;
+}
     private boolean validateStock(DefaultTableModel model) {
         try {
             String query = "SELECT stock FROM products WHERE product_id = ?";
