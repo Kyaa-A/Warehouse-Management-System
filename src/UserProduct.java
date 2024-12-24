@@ -1095,9 +1095,9 @@ public class UserProduct extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        UserSettings usersettings = new UserSettings(loggedInUsername);
-        usersettings.setVisible(true);
-        usersettings.setLocationRelativeTo(null);
+        UserProduct userproduct = new UserProduct(loggedInUsername);
+        userproduct.setVisible(true);
+        userproduct.setLocationRelativeTo(null);
         this.dispose();
     }//GEN-LAST:event_jButton8ActionPerformed
 
