@@ -350,16 +350,14 @@ public class UserHome extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap(32, Short.MAX_VALUE)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 532, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(15, 15, 15))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                    .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(30, 30, 30)
                         .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(30, 30, 30)
-                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)))
+                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addGap(22, 22, 22)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -518,305 +516,313 @@ private void startNotificationTimer() {
         jScrollPane1.setBorder(BorderFactory.createLineBorder(new Color(100, 100, 100), 1)); // Darker border
     }
 
-   private void loadNotifications() {
-    try {
-        refreshDatabaseConnection();
-        String customerQuery = "SELECT c.customer_id FROM customers c "
-                + "JOIN accountdetails a ON c.user_id = a.user_id "
-                + "WHERE a.accUsername = ?";
+    private void loadNotifications() {
+        try {
+            refreshDatabaseConnection();
+            String customerQuery = "SELECT c.customer_id FROM customers c "
+                    + "JOIN accountdetails a ON c.user_id = a.user_id "
+                    + "WHERE a.accUsername = ?";
 
-        PreparedStatement pst = connection.prepareStatement(customerQuery);
-        pst.setString(1, loggedInUsername);
-        ResultSet rs = pst.executeQuery();
+            PreparedStatement pst = connection.prepareStatement(customerQuery);
+            pst.setString(1, loggedInUsername);
+            ResultSet rs = pst.executeQuery();
 
-        if (rs.next()) {
-            int customerId = rs.getInt("customer_id");
+            if (rs.next()) {
+                int customerId = rs.getInt("customer_id");
 
-            // Query to get all notifications from history
-            String notificationQuery = "SELECT * FROM notifications_history "
-                    + "WHERE customer_id = ? "
-                    + "ORDER BY created_at DESC";
+                // Query to get all notifications from history
+                String notificationQuery = "SELECT * FROM notifications_history "
+                        + "WHERE customer_id = ? "
+                        + "ORDER BY created_at DESC";
 
-            PreparedStatement notifPst = connection.prepareStatement(notificationQuery);
-            notifPst.setInt(1, customerId);
-            ResultSet notifRs = notifPst.executeQuery();
+                PreparedStatement notifPst = connection.prepareStatement(notificationQuery);
+                notifPst.setInt(1, customerId);
+                ResultSet notifRs = notifPst.executeQuery();
 
-            StringBuilder notifications = new StringBuilder();
-            notifications.append("==== Your Order Notifications ====\n\n");
+                StringBuilder notifications = new StringBuilder();
+                notifications.append("==== Your Order Notifications ====\n\n");
 
-            while (notifRs.next()) {
-                String orderId = notifRs.getString("order_id");
-                String status = notifRs.getString("status");
-                String message = notifRs.getString("message");
-                String products = notifRs.getString("products");
-                Timestamp timestamp = notifRs.getTimestamp("created_at");
+                while (notifRs.next()) {
+                    String orderId = notifRs.getString("order_id");
+                    String status = notifRs.getString("status");
+                    String message = notifRs.getString("message");
+                    String products = notifRs.getString("products");
+                    Timestamp timestamp = notifRs.getTimestamp("created_at");
 
-                // Add a header for each notification with order ID
-                notifications.append("Order ID: ").append(orderId).append("\n");
-                
-                // Add status icon based on status
-                String statusIcon = switch (status) {
-                    case "VERIFIED" -> "✓";
-                    case "PACKED" -> "📦";
-                    case "SHIPPED" -> "🚚";
-                    case "DELIVERED" -> "✅";
-                    default -> "•";
-                };
-                
-                notifications.append(statusIcon).append(" ").append(message).append("\n");
-                notifications.append("Products: ").append(products).append("\n");
-                notifications.append("Time: ").append(timestamp).append("\n");
-                notifications.append("----------------------------------------\n\n");
-            }
+                    // Add a header for each notification with order ID
+                    notifications.append("Order ID: ").append(orderId).append("\n");
 
-            // Update the notification area
-            Component view = jScrollPane1.getViewport().getView();
-            if (view instanceof JTextPane) {
-                JTextPane textPane = (JTextPane) view;
-                
-                // Create a style for the text
-                StyledDocument doc = new DefaultStyledDocument();
-                SimpleAttributeSet style = new SimpleAttributeSet();
-                StyleConstants.setAlignment(style, StyleConstants.ALIGN_LEFT);
-                StyleConstants.setFontFamily(style, "Segoe UI");
-                StyleConstants.setFontSize(style, 12);
-                
-                // Set the styled text
-                textPane.setDocument(doc);
-                textPane.setText(notifications.toString());
-                doc.setParagraphAttributes(0, doc.getLength(), style, false);
-                
-                // Scroll to the top to show latest notifications
-                textPane.setCaretPosition(0);
-            }
+                    // Add status icon based on status
+                    String statusIcon = switch (status) {
+                        case "VERIFIED" ->
+                            "✔️";
+                        case "PACKED" ->
+                            "📦";
+                        case "SHIPPED" ->
+                            "🚚";
+                        case "DELIVERED" ->
+                            "✅";
+                        default ->
+                            "•";
+                    };
 
-            notifRs.close();
-            notifPst.close();
-        }
-
-        rs.close();
-        pst.close();
-
-    } catch (SQLException e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this,
-                "Error loading notifications: " + e.getMessage(),
-                "Database Error",
-                JOptionPane.ERROR_MESSAGE);
-    }
-}
-
-// Add this method to manually create a notification (if needed)
-private void createNotification(String orderId, int customerId, String status, String message, String products) {
-    try {
-        String insertQuery = "INSERT INTO notifications_history (order_id, customer_id, status, message, products) "
-                + "VALUES (?, ?, ?, ?, ?)";
-        
-        PreparedStatement pst = connection.prepareStatement(insertQuery);
-        pst.setString(1, orderId);
-        pst.setInt(2, customerId);
-        pst.setString(3, status);
-        pst.setString(4, message);
-        pst.setString(5, products);
-        
-        pst.executeUpdate();
-        pst.close();
-        
-        // Refresh the notifications display
-        loadNotifications();
-        
-    } catch (SQLException e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this,
-                "Error creating notification: " + e.getMessage(),
-                "Database Error",
-                JOptionPane.ERROR_MESSAGE);
-    }
-}
-   private void loadOrderList() {
-    try {
-        refreshDatabaseConnection();
-
-        // Get customer ID
-        String customerQuery = "SELECT c.customer_id FROM customers c "
-                + "JOIN accountdetails a ON c.user_id = a.user_id "
-                + "WHERE a.accUsername = ?";
-
-        PreparedStatement pst = connection.prepareStatement(customerQuery);
-        pst.setString(1, loggedInUsername);
-        ResultSet rs = pst.executeQuery();
-
-        if (rs.next()) {
-            int customerId = rs.getInt("customer_id");
-
-            // Query to get all orders with their items
-            String orderQuery = "SELECT o.order_id, o.status, o.order_date, o.last_updated, "
-                    + "GROUP_CONCAT(CONCAT(p.product_name, ' (', oi.quantity, ')') SEPARATOR ', ') as products, "
-                    + "GROUP_CONCAT(p.image_data) as images, "
-                    + "SUM(p.price * oi.quantity) as total_price "
-                    + "FROM orders o "
-                    + "JOIN order_items oi ON o.order_id = oi.order_id "
-                    + "JOIN products p ON oi.product_id = p.product_id "
-                    + "WHERE o.customer_id = ? "
-                    + "GROUP BY o.order_id, o.status, o.order_date, o.last_updated "
-                    + "ORDER BY o.last_updated DESC";
-
-            PreparedStatement orderPst = connection.prepareStatement(orderQuery);
-            orderPst.setInt(1, customerId);
-            ResultSet orderRs = orderPst.executeQuery();
-
-            // Create a panel to hold all order items
-            JPanel mainPanel = new JPanel();
-            mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-            mainPanel.setBackground(Color.WHITE);
-
-            while (orderRs.next()) {
-                String orderId = orderRs.getString("order_id");
-                String status = orderRs.getString("status");
-                String products = orderRs.getString("products");
-                Timestamp orderDate = orderRs.getTimestamp("order_date");
-                double totalPrice = orderRs.getDouble("total_price");
-
-                // Create a panel for each order
-                JPanel orderPanel = new JPanel();
-                orderPanel.setLayout(new BorderLayout(10, 10));
-                orderPanel.setBorder(BorderFactory.createCompoundBorder(
-                        BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(200, 200, 200)),
-                        BorderFactory.createEmptyBorder(10, 10, 10, 10)
-                ));
-                orderPanel.setBackground(Color.WHITE);
-
-                // Create header panel with order ID and status
-                JPanel headerPanel = new JPanel(new BorderLayout());
-                headerPanel.setBackground(Color.WHITE);
-
-                JLabel orderIdLabel = new JLabel("Order ID: " + orderId);
-                orderIdLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
-
-                JPanel statusPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-                statusPanel.setBackground(Color.WHITE);
-
-                JLabel statusLabel = new JLabel(status);
-                statusLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-                statusLabel.setForeground(getStatusColor(status));
-                
-                // Add "Mark as Delivered" button for SHIPPED orders
-                if (status.equals("SHIPPED")) {
-                    JButton deliveredButton = new JButton("Mark as Delivered");
-                    deliveredButton.setBackground(new Color(179, 1, 104));
-                    deliveredButton.setForeground(Color.WHITE);
-                    deliveredButton.setFocusPainted(false);
-                    deliveredButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-                    
-                    // Add hover effect
-                    deliveredButton.addMouseListener(new java.awt.event.MouseAdapter() {
-                        public void mouseEntered(java.awt.event.MouseEvent evt) {
-                            deliveredButton.setBackground(new Color(150, 1, 89));
-                        }
-                        public void mouseExited(java.awt.event.MouseEvent evt) {
-                            deliveredButton.setBackground(new Color(179, 1, 104));
-                        }
-                    });
-                    
-                    deliveredButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            int confirm = JOptionPane.showConfirmDialog(
-                                null,
-                                "Have you received this order? This action cannot be undone.",
-                                "Confirm Delivery",
-                                JOptionPane.YES_NO_OPTION
-                            );
-                            
-                            if (confirm == JOptionPane.YES_OPTION) {
-                                updateOrderStatus(orderId, "DELIVERED");
-                            }
-                        }
-                    });
-                    
-                    statusPanel.add(statusLabel);
-                    statusPanel.add(Box.createHorizontalStrut(10));
-                    statusPanel.add(deliveredButton);
-                } else {
-                    statusPanel.add(statusLabel);
+                    notifications.append(statusIcon).append(" ").append(message).append("\n");
+                    notifications.append("Products: ").append(products).append("\n");
+                    notifications.append("Time: ").append(timestamp).append("\n");
+                    notifications.append("----------------------------------------\n\n");
                 }
 
-                headerPanel.add(orderIdLabel, BorderLayout.WEST);
-                headerPanel.add(statusPanel, BorderLayout.EAST);
+                // Update the notification area
+                Component view = jScrollPane1.getViewport().getView();
+                if (view instanceof JTextPane) {
+                    JTextPane textPane = (JTextPane) view;
 
-                // Create content panel
-                JPanel contentPanel = new JPanel(new GridLayout(3, 1, 5, 5));
-                contentPanel.setBackground(Color.WHITE);
+                    // Create a style for the text
+                    StyledDocument doc = new DefaultStyledDocument();
+                    SimpleAttributeSet style = new SimpleAttributeSet();
+                    StyleConstants.setAlignment(style, StyleConstants.ALIGN_LEFT);
+                    StyleConstants.setFontFamily(style, "Segoe UI");
+                    StyleConstants.setFontSize(style, 12);
 
-                JLabel productsLabel = new JLabel("Products: " + products);
-                JLabel dateLabel = new JLabel("Order Date: " + orderDate.toString());
-                JLabel priceLabel = new JLabel(String.format("Total Price: ₱%.2f", totalPrice));
+                    // Set the styled text
+                    textPane.setDocument(doc);
+                    textPane.setText(notifications.toString());
+                    doc.setParagraphAttributes(0, doc.getLength(), style, false);
 
-                contentPanel.add(productsLabel);
-                contentPanel.add(dateLabel);
-                contentPanel.add(priceLabel);
+                    // Scroll to the top to show latest notifications
+                    textPane.setCaretPosition(0);
+                }
 
-                // Add components to order panel
-                orderPanel.add(headerPanel, BorderLayout.NORTH);
-                orderPanel.add(contentPanel, BorderLayout.CENTER);
-
-                // Add order panel to main panel
-                mainPanel.add(orderPanel);
-                mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+                notifRs.close();
+                notifPst.close();
             }
 
-            // Set the main panel as the viewport view
-            jScrollPane2.setViewportView(mainPanel);
+            rs.close();
+            pst.close();
 
-            orderRs.close();
-            orderPst.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Error loading notifications: " + e.getMessage(),
+                    "Database Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
-
-        rs.close();
-        pst.close();
-
-    } catch (SQLException e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this,
-                "Error loading orders: " + e.getMessage(),
-                "Database Error",
-                JOptionPane.ERROR_MESSAGE);
     }
-}
+
+// Add this method to manually create a notification (if needed)
+    private void createNotification(String orderId, int customerId, String status, String message, String products) {
+        try {
+            String insertQuery = "INSERT INTO notifications_history (order_id, customer_id, status, message, products) "
+                    + "VALUES (?, ?, ?, ?, ?)";
+
+            PreparedStatement pst = connection.prepareStatement(insertQuery);
+            pst.setString(1, orderId);
+            pst.setInt(2, customerId);
+            pst.setString(3, status);
+            pst.setString(4, message);
+            pst.setString(5, products);
+
+            pst.executeUpdate();
+            pst.close();
+
+            // Refresh the notifications display
+            loadNotifications();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Error creating notification: " + e.getMessage(),
+                    "Database Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void loadOrderList() {
+        try {
+            refreshDatabaseConnection();
+
+            // Get customer ID
+            String customerQuery = "SELECT c.customer_id FROM customers c "
+                    + "JOIN accountdetails a ON c.user_id = a.user_id "
+                    + "WHERE a.accUsername = ?";
+
+            PreparedStatement pst = connection.prepareStatement(customerQuery);
+            pst.setString(1, loggedInUsername);
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                int customerId = rs.getInt("customer_id");
+
+                // Query to get all orders with their items
+                String orderQuery = "SELECT o.order_id, o.status, o.order_date, o.last_updated, "
+                        + "GROUP_CONCAT(CONCAT(p.product_name, ' (', oi.quantity, ')') SEPARATOR ', ') as products, "
+                        + "GROUP_CONCAT(p.image_data) as images, "
+                        + "SUM(p.price * oi.quantity) as total_price "
+                        + "FROM orders o "
+                        + "JOIN order_items oi ON o.order_id = oi.order_id "
+                        + "JOIN products p ON oi.product_id = p.product_id "
+                        + "WHERE o.customer_id = ? "
+                        + "GROUP BY o.order_id, o.status, o.order_date, o.last_updated "
+                        + "ORDER BY o.last_updated DESC";
+
+                PreparedStatement orderPst = connection.prepareStatement(orderQuery);
+                orderPst.setInt(1, customerId);
+                ResultSet orderRs = orderPst.executeQuery();
+
+                // Create a panel to hold all order items
+                JPanel mainPanel = new JPanel();
+                mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+                mainPanel.setBackground(Color.WHITE);
+
+                while (orderRs.next()) {
+                    String orderId = orderRs.getString("order_id");
+                    String status = orderRs.getString("status");
+                    String products = orderRs.getString("products");
+                    Timestamp orderDate = orderRs.getTimestamp("order_date");
+                    double totalPrice = orderRs.getDouble("total_price");
+
+                    // Create a panel for each order
+                    JPanel orderPanel = new JPanel();
+                    orderPanel.setLayout(new BorderLayout(10, 10));
+                    orderPanel.setBorder(BorderFactory.createCompoundBorder(
+                            BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(200, 200, 200)),
+                            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+                    ));
+                    orderPanel.setBackground(Color.WHITE);
+
+                    // Create header panel with order ID and status
+                    JPanel headerPanel = new JPanel(new BorderLayout());
+                    headerPanel.setBackground(Color.WHITE);
+
+                    JLabel orderIdLabel = new JLabel("Order ID: " + orderId);
+                    orderIdLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+
+                    JPanel statusPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+                    statusPanel.setBackground(Color.WHITE);
+
+                    JLabel statusLabel = new JLabel(status);
+                    statusLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+                    statusLabel.setForeground(getStatusColor(status));
+
+                    // Add "Mark as Delivered" button for SHIPPED orders
+                    if (status.equals("SHIPPED")) {
+                        JButton deliveredButton = new JButton("Mark as Delivered");
+                        deliveredButton.setBackground(new Color(179, 1, 104));
+                        deliveredButton.setForeground(Color.WHITE);
+                        deliveredButton.setFocusPainted(false);
+                        deliveredButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+                        // Add hover effect
+                        deliveredButton.addMouseListener(new java.awt.event.MouseAdapter() {
+                            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                                deliveredButton.setBackground(new Color(150, 1, 89));
+                            }
+
+                            public void mouseExited(java.awt.event.MouseEvent evt) {
+                                deliveredButton.setBackground(new Color(179, 1, 104));
+                            }
+                        });
+
+                        deliveredButton.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                int confirm = JOptionPane.showConfirmDialog(
+                                        null,
+                                        "Have you received this order? This action cannot be undone.",
+                                        "Confirm Delivery",
+                                        JOptionPane.YES_NO_OPTION
+                                );
+
+                                if (confirm == JOptionPane.YES_OPTION) {
+                                    updateOrderStatus(orderId, "DELIVERED");
+                                }
+                            }
+                        });
+
+                        statusPanel.add(statusLabel);
+                        statusPanel.add(Box.createHorizontalStrut(10));
+                        statusPanel.add(deliveredButton);
+                    } else {
+                        statusPanel.add(statusLabel);
+                    }
+
+                    headerPanel.add(orderIdLabel, BorderLayout.WEST);
+                    headerPanel.add(statusPanel, BorderLayout.EAST);
+
+                    // Create content panel
+                    JPanel contentPanel = new JPanel(new GridLayout(3, 1, 5, 5));
+                    contentPanel.setBackground(Color.WHITE);
+
+                    JLabel productsLabel = new JLabel("Products: " + products);
+                    JLabel dateLabel = new JLabel("Order Date: " + orderDate.toString());
+                    JLabel priceLabel = new JLabel(String.format("Total Price: ₱%.2f", totalPrice));
+
+                    contentPanel.add(productsLabel);
+                    contentPanel.add(dateLabel);
+                    contentPanel.add(priceLabel);
+
+                    // Add components to order panel
+                    orderPanel.add(headerPanel, BorderLayout.NORTH);
+                    orderPanel.add(contentPanel, BorderLayout.CENTER);
+
+                    // Add order panel to main panel
+                    mainPanel.add(orderPanel);
+                    mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+                }
+
+                // Set the main panel as the viewport view
+                jScrollPane2.setViewportView(mainPanel);
+
+                orderRs.close();
+                orderPst.close();
+            }
+
+            rs.close();
+            pst.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Error loading orders: " + e.getMessage(),
+                    "Database Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
 // Add this new method to handle order status updates
-private void updateOrderStatus(String orderId, String newStatus) {
-    try {
-        refreshDatabaseConnection();
-        
-        String updateQuery = "UPDATE orders SET status = ? WHERE order_id = ?";
-        PreparedStatement pst = connection.prepareStatement(updateQuery);
-        pst.setString(1, newStatus);
-        pst.setString(2, orderId);
-        
-        int result = pst.executeUpdate();
-        pst.close();
-        
-        if (result > 0) {
-            // Refresh the display
-            loadOrderList();
-            refreshNotifications();
-            updateOrderStatistics();
-            
+    private void updateOrderStatus(String orderId, String newStatus) {
+        try {
+            refreshDatabaseConnection();
+
+            String updateQuery = "UPDATE orders SET status = ? WHERE order_id = ?";
+            PreparedStatement pst = connection.prepareStatement(updateQuery);
+            pst.setString(1, newStatus);
+            pst.setString(2, orderId);
+
+            int result = pst.executeUpdate();
+            pst.close();
+
+            if (result > 0) {
+                // Refresh the display
+                loadOrderList();
+                refreshNotifications();
+                updateOrderStatistics();
+
+                JOptionPane.showMessageDialog(this,
+                        "Order marked as delivered successfully!",
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
             JOptionPane.showMessageDialog(this,
-                "Order marked as delivered successfully!",
-                "Success",
-                JOptionPane.INFORMATION_MESSAGE);
+                    "Error updating order status: " + e.getMessage(),
+                    "Database Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
-        
-    } catch (SQLException e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this,
-                "Error updating order status: " + e.getMessage(),
-                "Database Error",
-                JOptionPane.ERROR_MESSAGE);
     }
-}
+
     private Color getStatusColor(String status) {
         switch (status) {
             case "PENDING":
